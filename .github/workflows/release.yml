@@ -1,0 +1,113 @@
+# Builds Prism for Windows, macOS and Linux on GitHub's own machines.
+#  - Every push / pull request: build + test (installers kept as downloadable workflow artifacts).
+#  - Pushing a version tag (git tag v1.0.0 && git push origin v1.0.0): also publishes a GitHub Release
+#    with all installers and the browser-store packages attached.
+name: Build & release
+
+on:
+  push:
+    branches: [main, master]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: Windows, os: windows-latest, target: --win, test: true }
+          - { name: macOS, os: macos-latest, target: --mac, test: false } # macOS only binds 127.0.0.1, which the multi-network tests need more of
+          - { name: Linux, os: ubuntu-latest, target: --linux, test: true }
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        if: matrix.test
+        run: npm test
+
+      - name: Build installers
+        run: |
+          npm run build
+          npm run pack:ext
+          npx electron-builder ${{ matrix.target }} --publish never
+        env:
+          # no signing certificates yet: Windows is unsigned, macOS is signed ad hoc (see package.json)
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+
+      - name: Browser-store packages
+        if: matrix.name == 'Linux'
+        run: node tools/pack-store.mjs
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: prism-${{ matrix.name }}
+          if-no-files-found: error
+          path: |
+            release/*.exe
+            release/*.dmg
+            release/*-mac-*.zip
+            release/*.AppImage
+            release/*.deb
+            release/*.tar.gz
+            release/store/*.zip
+
+  release:
+    name: Publish release
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - run: ls -R dist
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          name: Prism ${{ github.ref_name }}
+          generate_release_notes: true
+          body: |
+            ## Download
+
+            | System | File |
+            |---|---|
+            | **Windows** (installer) | `Prism-Setup-*.exe` |
+            | Windows (portable, no install) | `Prism-*-portable.exe` |
+            | **macOS** Apple Silicon (M1–M4) | `Prism-*-mac-arm64.dmg` |
+            | macOS Intel | `Prism-*-mac-x64.dmg` |
+            | **Linux** (any distro) | `Prism-*-linux-x86_64.AppImage` |
+            | Linux (Debian / Ubuntu) | `prism_*_amd64.deb` |
+
+            **First launch:** the installers aren't code-signed yet. On Windows click **More info → Run anyway**. On macOS right-click Prism → **Open** → **Open** (once). On Linux, make the AppImage executable (`chmod +x`) and run it.
+
+            The `prism-chrome-edge-*.zip` and `prism-firefox-*.zip` files are the browser-extension packages for the Chrome Web Store, Edge Add-ons and Firefox Add-ons.
+          files: |
+            dist/**/*.exe
+            dist/**/*.dmg
+            dist/**/*-mac-*.zip
+            dist/**/*.AppImage
+            dist/**/*.deb
+            dist/**/*.tar.gz
+            dist/**/prism-chrome-edge-*.zip
+            dist/**/prism-firefox-*.zip
