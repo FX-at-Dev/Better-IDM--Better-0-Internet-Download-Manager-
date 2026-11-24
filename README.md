@@ -4,6 +4,19 @@ A download manager that pulls every file over **all of your network connections 
 
 A from-scratch rebuild of the ideas in [Qorvex](https://github.com/PagalSarthak/qorvex) (MIT), in Electron + TypeScript + React.
 
+## Download
+
+Get the latest version from the **Releases** page:
+
+| System | File |
+|---|---|
+| Windows (installer) | `Prism-Setup-<version>.exe` |
+| Windows (portable) | `Prism-<version>-portable.exe` |
+| macOS Apple Silicon / Intel | `Prism-<version>-mac-arm64.dmg` / `-mac-x64.dmg` |
+| Linux | `Prism-<version>-linux-x86_64.AppImage` or `prism_<version>_amd64.deb` |
+
+The builds aren't code-signed yet, so the first launch needs one extra click: Windows **More info → Run anyway**; macOS right-click → **Open**.
+
 ## What's in it
 
 **Downloading**
@@ -51,10 +64,24 @@ npm install
 npm start            # build + launch
 npm run dev          # hot-reload UI (Vite) + watch main process
 npm test             # engine tests against a real local ranged HTTP server
-npm run dist         # Windows installer + portable exe in release/
+npm run dist:win     # Windows installer + portable exe in release/
+npm run dist:mac     # macOS .dmg/.zip (must run on a Mac)
+npm run dist:linux   # AppImage, .deb, .tar.gz (must run on Linux)
+npm run pack:store   # browser-store packages in release/store/
 ```
 
 npm 11 blocks install scripts by default. `package.json` already allows the ones Prism needs (`electron`, `node-datachannel`, `electron-winstaller`).
+
+## Releases
+
+`.github/workflows/release.yml` builds Windows, macOS and Linux on GitHub's machines for every push. To publish a version, bump `version` in package.json, then:
+
+```powershell
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+The workflow attaches every installer (and the browser-store packages) to a GitHub Release for that tag.
 
 ## Security model of the local API (`127.0.0.1:6812`)
 
