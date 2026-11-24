@@ -6,14 +6,16 @@ A from-scratch rebuild of the ideas in [Qorvex](https://github.com/PagalSarthak/
 
 ## Download
 
-Get the latest version from the **Releases** page:
+**[⬇ Download Prism 1.0.0](https://github.com/FX-at-Dev/Better-IDM--Better-0-Internet-Download-Manager-/releases/tag/v1.0.0)** · [all releases](https://github.com/FX-at-Dev/Better-IDM--Better-0-Internet-Download-Manager-/releases/latest)
 
-| System | File |
+| System | Download |
 |---|---|
-| Windows (installer) | `Prism-Setup-<version>.exe` |
-| Windows (portable) | `Prism-<version>-portable.exe` |
-| macOS Apple Silicon / Intel | `Prism-<version>-mac-arm64.dmg` / `-mac-x64.dmg` |
-| Linux | `Prism-<version>-linux-x86_64.AppImage` or `prism_<version>_amd64.deb` |
+| Windows (installer) | [Prism-Setup-1.0.0.exe](https://github.com/FX-at-Dev/Better-IDM--Better-0-Internet-Download-Manager-/releases/download/v1.0.0/Prism-Setup-1.0.0.exe) |
+| Windows (portable, no install) | [Prism-1.0.0-portable.exe](https://github.com/FX-at-Dev/Better-IDM--Better-0-Internet-Download-Manager-/releases/download/v1.0.0/Prism-1.0.0-portable.exe) |
+| macOS — Apple Silicon (M1–M4) | [Prism-1.0.0-mac-arm64.dmg](https://github.com/FX-at-Dev/Better-IDM--Better-0-Internet-Download-Manager-/releases/download/v1.0.0/Prism-1.0.0-mac-arm64.dmg) |
+| macOS — Intel | [Prism-1.0.0-mac-x64.dmg](https://github.com/FX-at-Dev/Better-IDM--Better-0-Internet-Download-Manager-/releases/download/v1.0.0/Prism-1.0.0-mac-x64.dmg) |
+| Linux (any distro) | [Prism-1.0.0-linux-x86_64.AppImage](https://github.com/FX-at-Dev/Better-IDM--Better-0-Internet-Download-Manager-/releases/download/v1.0.0/Prism-1.0.0-linux-x86_64.AppImage) |
+| Linux (Debian / Ubuntu) | [prism_1.0.0_amd64.deb](https://github.com/FX-at-Dev/Better-IDM--Better-0-Internet-Download-Manager-/releases/download/v1.0.0/prism_1.0.0_amd64.deb) |
 
 The builds aren't code-signed yet, so the first launch needs one extra click: Windows **More info → Run anyway**; macOS right-click → **Open**.
 
