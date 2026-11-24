@@ -36,9 +36,13 @@ for (const [name, dir] of [
   fs.rmSync(file, { force: true });
   // manifest.json must sit at the root of the zip
   // Windows' bsdtar writes real zips; Git's GNU tar (often first on PATH) can't
+  // (Linux and macOS: the standard `zip` tool)
   const winTar = path.join(process.env.SystemRoot ?? "C:\\Windows", "System32", "tar.exe");
-  const tar = process.platform === "win32" && fs.existsSync(winTar) ? winTar : "bsdtar";
-  const r = spawnSync(tar, ["-a", "-c", "-f", file, ...fs.readdirSync(dir)], { cwd: dir });
+  const names = fs.readdirSync(dir);
+  const r =
+    process.platform === "win32" && fs.existsSync(winTar)
+      ? spawnSync(winTar, ["-a", "-c", "-f", file, ...names], { cwd: dir })
+      : spawnSync("zip", ["-q", "-r", "-X", file, ...names], { cwd: dir });
   if (r.status !== 0) throw new Error(`zip failed: ${r.stderr}`);
   console.log("packed", path.relative(root, file), `${(fs.statSync(file).size / 1024).toFixed(0)} KB`);
 }
