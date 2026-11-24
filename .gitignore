@@ -1,0 +1,6 @@
+node_modules/
+dist/
+release/
+extension/build/
+*.log
+build/installer.nsh

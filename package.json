@@ -1,0 +1,159 @@
+{
+  "name": "prism-download-manager",
+  "productName": "Prism",
+  "version": "1.0.0",
+  "description": "A fast, beautiful download manager that bonds every network connection you have.",
+  "main": "dist/main/src/main/main.js",
+  "author": "Prism",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "dev": "npm run build:main && concurrently -k \"vite\" \"tsc -p tsconfig.main.json -w --preserveWatchOutput\" \"wait-on tcp:5199 && cross-env PRISM_DEV=1 electron .\"",
+    "build:main": "tsc -p tsconfig.main.json",
+    "build:renderer": "vite build",
+    "build": "npm run build:main && npm run build:renderer",
+    "start": "npm run build && electron .",
+    "test": "npm run build:main && node --test \"dist/main/tests/*.test.js\"",
+    "typecheck": "tsc -p tsconfig.main.json --noEmit && tsc -p tsconfig.renderer.json --noEmit",
+    "pack:ext": "node tools/build-extension.mjs",
+    "dist": "npm run build && npm run pack:ext && electron-builder",
+    "pack:store": "node tools/build-extension.mjs && node tools/pack-store.mjs",
+    "dist:win": "npm run build && npm run pack:ext && electron-builder --win",
+    "dist:mac": "npm run build && npm run pack:ext && electron-builder --mac",
+    "dist:linux": "npm run build && npm run pack:ext && electron-builder --linux"
+  },
+  "build": {
+    "appId": "app.prism.downloadmanager",
+    "productName": "Prism",
+    "files": [
+      "dist/**/*",
+      "assets/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "extension/build",
+        "to": "extension"
+      }
+    ],
+    "directories": {
+      "output": "release"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "assets/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "include": "build/installer.nsh",
+      "artifactName": "Prism-Setup-${version}.${ext}"
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "icon": "assets/icon.png",
+      "category": "public.app-category.utilities",
+      "identity": "-",
+      "hardenedRuntime": false
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "deb",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "tar.gz",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "assets/icon.png",
+      "category": "Network",
+      "executableName": "prism",
+      "synopsis": "Download manager that uses every network connection at once",
+      "maintainer": "Prism <prism@users.noreply.github.com>"
+    },
+    "artifactName": "Prism-${version}-${os}-${arch}.${ext}",
+    "portable": {
+      "artifactName": "Prism-${version}-portable.${ext}"
+    },
+    "dmg": {
+      "artifactName": "Prism-${version}-mac-${arch}.${ext}"
+    },
+    "deb": {
+      "artifactName": "prism_${version}_${arch}.${ext}"
+    },
+    "appImage": {
+      "artifactName": "Prism-${version}-linux-${arch}.${ext}"
+    }
+  },
+  "dependencies": {
+    "webtorrent": "^3.0.21"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.3.0",
+    "concurrently": "^10.0.7",
+    "cross-env": "^10.1.0",
+    "electron": "^45.4.1",
+    "electron-builder": "^26.18.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.8",
+    "wait-on": "^9.5.1"
+  },
+  "allowScripts": {
+    "electron@45.4.1": true,
+    "electron-winstaller@5.4.0": true,
+    "node-datachannel@0.32.3": true
+  },
+  "prism": {
+    "extensionStores": {
+      "chrome": "",
+      "edge": "",
+      "firefox": ""
+    }
+  }
+}
