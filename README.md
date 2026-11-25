@@ -10,11 +10,16 @@ Website: https://fx-at-dev.github.io/Better-IDM--Better-0-Internet-Download-Mana
 
 **[⬇ Download Lanes](https://fx-at-dev.github.io/Better-IDM--Better-0-Internet-Download-Manager-/)** — the website picks the right file for your system. Or grab any file from the [latest release](https://github.com/FX-at-Dev/Better-IDM--Better-0-Internet-Download-Manager-/releases/latest):
 
+Current version: **1.1.4**
+
 | System | File |
 |---|---|
-| Windows | `Lanes-Setup-<version>.exe` (installer) or `Lanes-<version>-portable.exe` |
-| macOS | `Lanes-<version>-mac-arm64.dmg` (Apple Silicon) or `-mac-x64.dmg` (Intel) |
-| Linux | `Lanes-<version>-linux-x86_64.AppImage`, `lanes_<version>_amd64.deb` or `.tar.gz` |
+| Windows | [Installer](https://github.com/FX-at-Dev/Better-IDM--Better-0-Internet-Download-Manager-/releases/download/v1.1.4/Lanes-Setup-1.1.4.exe) · [Portable](https://github.com/FX-at-Dev/Better-IDM--Better-0-Internet-Download-Manager-/releases/download/v1.1.4/Lanes-1.1.4-portable.exe) |
+| macOS | [Apple Silicon (M1–M4)](https://github.com/FX-at-Dev/Better-IDM--Better-0-Internet-Download-Manager-/releases/download/v1.1.4/Lanes-1.1.4-mac-arm64.dmg) · [Intel](https://github.com/FX-at-Dev/Better-IDM--Better-0-Internet-Download-Manager-/releases/download/v1.1.4/Lanes-1.1.4-mac-x64.dmg) |
+| Linux | [AppImage](https://github.com/FX-at-Dev/Better-IDM--Better-0-Internet-Download-Manager-/releases/download/v1.1.4/Lanes-1.1.4-linux-x86_64.AppImage) · [.deb](https://github.com/FX-at-Dev/Better-IDM--Better-0-Internet-Download-Manager-/releases/download/v1.1.4/lanes_1.1.4_amd64.deb) · [.tar.gz](https://github.com/FX-at-Dev/Better-IDM--Better-0-Internet-Download-Manager-/releases/download/v1.1.4/Lanes-1.1.4-linux-x64.tar.gz) |
+| Browser stores | [Chrome / Edge package](https://github.com/FX-at-Dev/Better-IDM--Better-0-Internet-Download-Manager-/releases/download/v1.1.4/lanes-chrome-edge-1.1.4.zip) · [Firefox package](https://github.com/FX-at-Dev/Better-IDM--Better-0-Internet-Download-Manager-/releases/download/v1.1.4/lanes-firefox-1.1.4.zip) |
+
+**Updates:** from 1.1.4 on, the Windows installer and the Linux AppImage download new versions by themselves and install them when Lanes restarts (Settings → Updates). The portable, macOS and package builds tell you when a new version is out. If you have 1.1.3 or older, install 1.1.4 once by hand.
 
 The builds aren't code-signed yet, so the first launch needs one extra click: Windows **More info → Run anyway**; macOS right-click → **Open**.
 
@@ -84,7 +89,7 @@ git tag v1.0.0
 git push origin v1.0.0
 ```
 
-The workflow attaches every installer (and the browser-store packages) to a GitHub Release for that tag.
+The workflow attaches every installer (and the browser-store packages) to a GitHub Release for that tag, along with the `latest*.yml` and `.blockmap` files that installed copies of Lanes check for updates.
 
 ## Security model of the local API (`127.0.0.1:6812`)
 
