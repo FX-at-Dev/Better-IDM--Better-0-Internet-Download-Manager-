@@ -6,7 +6,7 @@ import os from "node:os";
 import path from "node:path";
 import crypto from "node:crypto";
 import { Network, NetworkManager } from "../src/main/networks.js";
-import { SegmentedDownload } from "../src/main/segmented.js";
+import { FileGoneError, SegmentedDownload } from "../src/main/segmented.js";
 import { TokenBucket } from "../src/main/throttle.js";
 import { probe } from "../src/main/http.js";
 import { SettingsStore } from "../src/main/store.js";
@@ -139,6 +139,15 @@ test("pauses mid-flight and resumes from saved segments", async () => {
   const second = dl(base + "/ok", file, mgr, DATA.length, true, saved);
   await second.run(new AbortController().signal);
   assert.equal(sha(file), SHA);
+});
+
+test("a file deleted mid-download stops the download, so its disk space is freed", async () => {
+  const mgr = nets(["127.0.0.1"]);
+  const file = path.join(tmp, "gone.bin");
+  const d = dl(base + "/slow", file, mgr, DATA.length, true);
+  const running = d.run(new AbortController().signal);
+  setTimeout(() => fs.rmSync(file, { force: true }), 300); // like deleting it in File Explorer
+  await assert.rejects(running, FileGoneError);
 });
 
 test("falls back to one connection when the server has no range support", async () => {

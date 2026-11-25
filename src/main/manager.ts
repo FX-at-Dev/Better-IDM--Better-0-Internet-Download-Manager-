@@ -464,6 +464,11 @@ export class Manager {
       job.segments = [];
       job.downloaded = 0;
     }
+    if (job.segments.length && !fs.existsSync(job.path + PART)) {
+      // the half-finished file was deleted while paused: start it over rather than leave holes
+      job.segments = [];
+      job.downloaded = 0;
+    }
     fs.mkdirSync(job.dir, { recursive: true });
     job.status = "downloading";
     this.touch();
@@ -559,6 +564,11 @@ export class Manager {
     for (let i = 0; i < media.parts.length; i++) {
       const part = media.parts[i];
       media.partIndex = i;
+      if (!fs.existsSync(part.file)) {
+        // deleted while paused (or never started): download this part from the beginning
+        part.done = false;
+        part.segments = [];
+      }
       if (part.done) continue;
       const src = r.parts[i];
       const withSource = usable.filter((n) => src.sources[n.id]);

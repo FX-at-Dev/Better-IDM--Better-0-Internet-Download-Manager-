@@ -1,7 +1,21 @@
 import fs from "node:fs";
+import { execFile } from "node:child_process";
 import { HttpError, request } from "./http.js";
 import { sleep, TokenBucket } from "./throttle.js";
 import type { Network, NetworkManager } from "./networks.js";
+
+/** The download's file was deleted while it was downloading. */
+export class FileGoneError extends Error {
+  constructor() {
+    super("The file was deleted while downloading — use Restart to download it again");
+  }
+}
+
+/** Mark a new, empty file as sparse on Windows (no admin needed). Harmless if it fails. */
+function makeSparse(file: string): Promise<void> {
+  if (process.platform !== "win32") return Promise.resolve();
+  return new Promise((resolve) => execFile("fsutil", ["sparse", "setflag", file], { windowsHide: true, timeout: 5000 }, () => resolve()));
+}
 
 /** Persisted byte range. `end` is exclusive; -1 means "until the server stops" (unknown size). */
 export interface Segment {
@@ -117,11 +131,21 @@ export class SegmentedDownload {
     if (signal.aborted) throw signal.reason;
     const exists = fs.existsSync(this.o.file);
     this.fh = await fs.promises.open(this.o.file, exists ? "r+" : "w+");
-    if (!exists && this.size > 0) await this.fh.truncate(this.size);
+    if (!exists && this.size > 0) {
+      // Sparse: the file is full size, but disk space is only used as data arrives (on Windows this
+      // needs a flag; macOS/Linux do it already). Drives without sparse support reserve it all up front.
+      await makeSparse(this.o.file);
+      await this.fh.truncate(this.size);
+    }
     const onAbort = () => this.ctrl.abort(signal.reason);
     signal.addEventListener("abort", onAbort, { once: true });
     const done = new Promise<void>((resolve, reject) => (this.settle = { resolve, reject }));
-    const timer = setInterval(() => this.spawn(), 1000);
+    const timer = setInterval(() => {
+      // Deleted from outside Lanes (e.g. in File Explorer)? Stop, so the handle closes and Windows
+      // frees the space — it can't while we keep writing into the deleted file.
+      if (!fs.existsSync(this.o.file)) return this.fail(new FileGoneError());
+      this.spawn();
+    }, 1000);
     try {
       if (this.complete() || this.size === 0) this.finish();
       else this.spawn();
@@ -131,6 +155,8 @@ export class SegmentedDownload {
           this.ctrl.signal.addEventListener("abort", () => reject(this.ctrl.signal.reason ?? new Error("aborted")), { once: true }),
         ),
       ]);
+      // finished faster than the once-a-second check could notice the file being deleted
+      if (!fs.existsSync(this.o.file)) throw new FileGoneError();
     } finally {
       clearInterval(timer);
       signal.removeEventListener("abort", onAbort);
