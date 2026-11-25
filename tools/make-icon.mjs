@@ -1,5 +1,5 @@
-// Renders the Prism app icon to PNG without any image libraries.
-// A blue rounded tile with a white prism and a download arrow.
+// Renders the Lanes app icon to PNG without any image libraries.
+// A blue rounded tile with a white lanes and a download arrow.
 import fs from "node:fs";
 import zlib from "node:zlib";
 import path from "node:path";
@@ -46,7 +46,7 @@ const hex = (h) => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), pa
 const mix = (a, b, t) => a.map((v, i) => v + (b[i] - v) * t);
 const TOP = hex("#5f9bff");
 const BOTTOM = hex("#3466e0");
-const ARROW = hex("#3a72ea");
+
 
 function sdRoundRect(x, y, half, r) {
   const qx = Math.abs(x) - half + r;
@@ -68,12 +68,19 @@ function segDist(px, py, ax, ay, bx, by) {
   return Math.hypot(px - ax - t * dx, py - ay - t * dy);
 }
 
-/** Blue rounded tile, white prism, and (when there's room) a down arrow inside it. */
+// The Lanes mark: three lanes that merge into one arrow pointing down, over a base line.
+const LANES = [
+  [0.3, 0.2, 0.5, 0.64],
+  [0.5, 0.2, 0.5, 0.64],
+  [0.7, 0.2, 0.5, 0.64],
+  [0.31, 0.8, 0.69, 0.8],
+];
+
+/** Blue rounded tile with the white Lanes mark. */
 function render(size) {
   const out = Buffer.alloc(size * size * 4);
   const SS = 4;
-  const arrow = size >= 40;
-  const w = 0.045; // arrow stroke half-width
+  const w = size <= 20 ? 0.075 : size <= 48 ? 0.06 : 0.048; // stroke half-width, bolder when small
   for (let y = 0; y < size; y++) {
     for (let x = 0; x < size; x++) {
       const acc = [0, 0, 0, 0];
@@ -83,16 +90,7 @@ function render(size) {
           const v = (y + (sy + 0.5) / SS) / size;
           if (sdRoundRect(u - 0.5, v - 0.5, 0.47, 0.2) >= 0) continue;
           let col = mix(TOP, BOTTOM, v);
-          const A = [0.5, 0.2],
-            B = [0.8, 0.76],
-            C = [0.2, 0.76];
-          if (inTriangle(u, v, A, B, C)) {
-            col = u > 0.5 && inTriangle(u, v, A, B, [0.5, 0.76]) ? [236, 241, 255] : [255, 255, 255];
-            if (arrow) {
-              const d = Math.min(segDist(u, v, 0.5, 0.42, 0.5, 0.66), segDist(u, v, 0.5, 0.66, 0.42, 0.58), segDist(u, v, 0.5, 0.66, 0.58, 0.58));
-              if (d < w) col = ARROW;
-            }
-          }
+          if (Math.min(...LANES.map(([ax, ay, bx, by]) => segDist(u, v, ax, ay, bx, by))) < w) col = [255, 255, 255];
           acc[0] += col[0];
           acc[1] += col[1];
           acc[2] += col[2];

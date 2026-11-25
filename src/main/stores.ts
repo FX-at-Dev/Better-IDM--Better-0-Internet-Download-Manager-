@@ -1,6 +1,6 @@
 // One-click extension install, the way IDM does it — active once the extension is published.
 //
-// Put the store IDs in package.json → "prism.extensionStores" and rebuild. Prism then:
+// Put the store IDs in package.json → "lanes.extensionStores" and rebuild. Lanes then:
 //  1. registers the extension with every installed Chromium browser (HKCU\…\Extensions\<id>),
 //     so the browser shows "New extension added — Enable?" next time it starts;
 //  2. turns the setup page into a single "Add to <browser>" button linking to the store.
@@ -15,7 +15,7 @@ import type { StoreLinks } from "./welcome.js";
 export interface StoreIds {
   chrome?: string; // Chrome Web Store id (also used for Brave)
   edge?: string; // Microsoft Edge Add-ons id
-  firefox?: string; // addons.mozilla.org slug, e.g. "prism-download-manager"
+  firefox?: string; // addons.mozilla.org slug, e.g. "lanes-download-manager"
 }
 
 const ID = /^[a-p]{32}$/; // Chromium extension ids are 32 letters a–p
@@ -23,7 +23,7 @@ const ID = /^[a-p]{32}$/; // Chromium extension ids are 32 letters a–p
 export function readStoreIds(appRoot: string): StoreIds {
   try {
     const pkg = JSON.parse(fs.readFileSync(path.join(appRoot, "package.json"), "utf8"));
-    const s = pkg?.prism?.extensionStores ?? {};
+    const s = pkg?.lanes?.extensionStores ?? {};
     return {
       chrome: ID.test(s.chrome ?? "") ? s.chrome : undefined,
       edge: ID.test(s.edge ?? "") ? s.edge : undefined,

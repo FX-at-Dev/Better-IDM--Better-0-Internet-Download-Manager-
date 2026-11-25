@@ -1,14 +1,14 @@
 {
-  "name": "prism-download-manager",
-  "productName": "Prism",
-  "version": "1.0.0",
+  "name": "lanes-download-manager",
+  "productName": "Lanes",
+  "version": "1.1.0",
   "description": "A fast, beautiful download manager that bonds every network connection you have.",
   "main": "dist/main/src/main/main.js",
-  "author": "Prism",
+  "author": "Lanes",
   "license": "MIT",
   "private": true,
   "scripts": {
-    "dev": "npm run build:main && concurrently -k \"vite\" \"tsc -p tsconfig.main.json -w --preserveWatchOutput\" \"wait-on tcp:5199 && cross-env PRISM_DEV=1 electron .\"",
+    "dev": "npm run build:main && concurrently -k \"vite\" \"tsc -p tsconfig.main.json -w --preserveWatchOutput\" \"wait-on tcp:5199 && cross-env LANES_DEV=1 electron .\"",
     "build:main": "tsc -p tsconfig.main.json",
     "build:renderer": "vite build",
     "build": "npm run build:main && npm run build:renderer",
@@ -24,7 +24,7 @@
   },
   "build": {
     "appId": "app.prism.downloadmanager",
-    "productName": "Prism",
+    "productName": "Lanes",
     "files": [
       "dist/**/*",
       "assets/**/*",
@@ -61,7 +61,7 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "include": "build/installer.nsh",
-      "artifactName": "Prism-Setup-${version}.${ext}"
+      "artifactName": "Lanes-Setup-${version}.${ext}"
     },
     "mac": {
       "target": [
@@ -108,22 +108,22 @@
       ],
       "icon": "assets/icon.png",
       "category": "Network",
-      "executableName": "prism",
+      "executableName": "lanes",
       "synopsis": "Download manager that uses every network connection at once",
-      "maintainer": "Prism <prism@users.noreply.github.com>"
+      "maintainer": "Lanes <lanes@users.noreply.github.com>"
     },
-    "artifactName": "Prism-${version}-${os}-${arch}.${ext}",
+    "artifactName": "Lanes-${version}-${os}-${arch}.${ext}",
     "portable": {
-      "artifactName": "Prism-${version}-portable.${ext}"
+      "artifactName": "Lanes-${version}-portable.${ext}"
     },
     "dmg": {
-      "artifactName": "Prism-${version}-mac-${arch}.${ext}"
+      "artifactName": "Lanes-${version}-mac-${arch}.${ext}"
     },
     "deb": {
-      "artifactName": "prism_${version}_${arch}.${ext}"
+      "artifactName": "lanes_${version}_${arch}.${ext}"
     },
     "appImage": {
-      "artifactName": "Prism-${version}-linux-${arch}.${ext}"
+      "artifactName": "Lanes-${version}-linux-${arch}.${ext}"
     }
   },
   "dependencies": {
@@ -149,7 +149,7 @@
     "electron-winstaller@5.4.0": true,
     "node-datachannel@0.32.3": true
   },
-  "prism": {
+  "lanes": {
     "extensionStores": {
       "chrome": "",
       "edge": "",

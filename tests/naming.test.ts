@@ -39,9 +39,9 @@ test("pickFilename falls back to the URL and adds an extension from MIME", () =>
 });
 
 test("uniquePath auto-renames collisions", () => {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "prism-n-"));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "lanes-n-"));
   fs.writeFileSync(path.join(dir, "f.zip"), "");
-  fs.writeFileSync(path.join(dir, "f (1).zip.prism-part"), "");
+  fs.writeFileSync(path.join(dir, "f (1).zip.lanes-part"), "");
   assert.equal(path.basename(uniquePath(dir, "f.zip")), "f (2).zip");
   assert.equal(path.basename(uniquePath(dir, "g.zip", new Set([path.join(dir, "g.zip").toLowerCase()]))), "g (1).zip");
   fs.rmSync(dir, { recursive: true });

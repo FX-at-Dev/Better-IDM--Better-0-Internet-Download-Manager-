@@ -1,8 +1,8 @@
 // A "Download" button over videos (YouTube, Vimeo, news sites, direct mp4…), like IDM's.
-// Clicking it opens Prism's quality picker for the page.
+// Clicking it opens Lanes's quality picker for the page.
 (() => {
-  if (window.__prism) return;
-  window.__prism = true;
+  if (window.__lanes) return;
+  window.__lanes = true;
   const STORE_BUILD = false; // see background.js — no button on YouTube in store builds
   if (STORE_BUILD && /(^|\.)youtube\.com$/i.test(location.hostname)) return;
   const api = globalThis.browser ?? globalThis.chrome;
@@ -23,14 +23,14 @@
       button:hover{background:rgba(36,38,46,.9)}
       button:active{transform:translateY(.5px)}
       svg{width:16px;height:16px;flex:none;color:#4f8cff}</style>
-      <button title="Download with Prism"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 19h16"/></svg><span>Download video</span></button>`;
+      <button title="Download with Lanes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 19h16"/></svg><span>Download video</span></button>`;
     btn = sh.querySelector("button");
     label = sh.querySelector("span");
     btn.onclick = (e) => {
       e.stopPropagation();
       e.preventDefault();
-      if (mode.direct) send({ url: mode.direct, referer: location.href }, "Sent to Prism");
-      else send({ url: mode.page, media: true }, "Opening Prism…");
+      if (mode.direct) send({ url: mode.direct, referer: location.href }, "Sent to Lanes");
+      else send({ url: mode.page, media: true }, "Opening Lanes…");
     };
   }
   function flash(t) {
@@ -40,12 +40,12 @@
   async function send(msg, ok) {
     flash("Sending…");
     try {
-      flash((await api.runtime.sendMessage({ type: "send", ...msg })) ? ok : "Start Prism first");
+      flash((await api.runtime.sendMessage({ type: "send", ...msg })) ? ok : "Start Lanes first");
     } catch {
       flash("Reload the page");
     }
   }
-  // Direct file URL -> download as-is. blob:/MSE/HLS (YouTube…) -> Prism reads the page with yt-dlp.
+  // Direct file URL -> download as-is. blob:/MSE/HLS (YouTube…) -> Lanes reads the page with yt-dlp.
   const modeOf = (v) => {
     const s = v.currentSrc || v.src || "";
     return /^https?:/.test(s) && !/\.(m3u8|mpd)(\?|$)/i.test(s) ? { direct: s } : { page: location.href };

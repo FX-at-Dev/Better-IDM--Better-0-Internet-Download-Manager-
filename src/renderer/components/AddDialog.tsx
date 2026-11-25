@@ -6,7 +6,7 @@ import { FileIcon } from "./DownloadList";
 import { Icon } from "./Icon";
 import { Btn, Select, Toggle } from "./ui";
 
-const api = window.prism;
+const api = window.lanes;
 
 const isLink = (u: string) => /^(https?:\/\/\S+|magnet:\?\S+)$/i.test(u);
 
@@ -378,7 +378,7 @@ function Preview({
         <FileIcon category="other" size={40} />
         <div className="preview-text">
           <b>Download the link as a file</b>
-          <span className="muted">Prism will save whatever the server sends.</span>
+          <span className="muted">Lanes will save whatever the server sends.</span>
         </div>
         <Btn small onClick={() => setAsFile(false)}>
           Undo
@@ -418,7 +418,7 @@ function Preview({
           <FileIcon category="video" size={40} />
           <div className="preview-text">
             <b>This looks like a video page{r.site ? ` on ${r.site}` : ""}</b>
-            <span className="muted">Prism reads video sites with yt-dlp, a free tool (about 25 MB, installed once).</span>
+            <span className="muted">Lanes reads video sites with yt-dlp, a free tool (about 25 MB, installed once).</span>
           </div>
           <Btn kind="primary" small disabled={!!state.tools.installing} onClick={() => api.installTool("ytdlp")}>
             {state.tools.installing === "ytdlp" ? state.tools.message || "Installing…" : "Install yt-dlp"}
@@ -492,7 +492,7 @@ function QualityPicker({ info, state, choice, setChoice }: { info: MediaInfo; st
         <div className="note">
           <Icon name="info" size={14} />
           <span>
-            {sel.convert ? "Converting to MP3" : "This quality comes as separate video and audio. Joining them"} needs ffmpeg — Prism installs it automatically the first time (about 90 MB).
+            {sel.convert ? "Converting to MP3" : "This quality comes as separate video and audio. Joining them"} needs ffmpeg — Lanes installs it automatically the first time (about 90 MB).
           </span>
         </div>
       )}

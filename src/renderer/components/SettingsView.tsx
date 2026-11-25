@@ -4,7 +4,7 @@ import { CATEGORY_LABEL } from "../lib/format";
 import { Icon } from "./Icon";
 import { Btn, NumberInput, Row, Section, Select, Slider, TextInput, Toggle } from "./ui";
 
-const api = window.prism;
+const api = window.lanes;
 const ACCENTS = ["#4f8cff", "#2fb67c", "#35b5c9", "#a776f0", "#e5679a", "#e07b4f", "#e0a32e", "#8b919c"];
 
 export function SettingsView({ state, toast }: { state: AppState; toast: (m: string, i?: string) => void }) {
@@ -18,7 +18,7 @@ export function SettingsView({ state, toast }: { state: AppState; toast: (m: str
       <div className="page-head">
         <div className="page-title">
           <h1>Settings</h1>
-          <span className="sub">Prism {state.version}</span>
+          <span className="sub">Lanes {state.version}</span>
         </div>
       </div>
 
@@ -234,7 +234,7 @@ export function SettingsView({ state, toast }: { state: AppState; toast: (m: str
         <div className="ext-install">
           <p className="muted small">
             Like IDM's browser integration: it catches downloads, adds a <b>Download video</b> button on videos (YouTube and others) that opens the quality picker here, and
-            adds “Download with Prism” to the right-click menu.
+            adds “Download with Lanes” to the right-click menu.
           </p>
           <div className="row-inline">
             <Btn kind={s.extensionBrowsers.length ? "secondary" : "primary"} small icon="puzzle" onClick={() => api.openSetupPage()}>
@@ -247,7 +247,7 @@ export function SettingsView({ state, toast }: { state: AppState; toast: (m: str
         <Row title="Take over browser downloads">
           <Toggle checked={s.intercept} onChange={(v) => set({ intercept: v })} />
         </Row>
-        <Row title="Ask before downloading" help="Off: caught files start downloading straight away. On: Prism first shows the name, size and folder. Videos always ask for a quality.">
+        <Row title="Ask before downloading" help="Off: caught files start downloading straight away. On: Lanes first shows the name, size and folder. Videos always ask for a quality.">
           <Toggle checked={s.askBrowserDownloads} onChange={(v) => set({ askBrowserDownloads: v })} />
         </Row>
         <Row title="Only take over files larger than" help="Small files stay in the browser.">

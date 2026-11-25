@@ -6,9 +6,8 @@ import { Icon } from "./Icon";
 export function Logo({ size = 18 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" className="logo" aria-hidden="true">
-      <path d="M12 2.5 22 20.5H2z" fill="var(--accent)" />
-      <path d="M12 2.5 22 20.5H12z" fill="#fff" fillOpacity=".28" />
-      <path d="M12 9v7m0 0-2.6-2.6M12 16l2.6-2.6" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      <rect width="24" height="24" rx="5.5" fill="var(--accent)" />
+      <path d="M7.2 4.8 12 15.4M12 4.8v10.6M16.8 4.8 12 15.4M7.4 19.2h9.2" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" fill="none" />
     </svg>
   );
 }
@@ -29,7 +28,7 @@ export function Titlebar({
     <header className={`titlebar ${state.platform === "darwin" ? "mac" : ""}`}>
       <div className="brand">
         <Logo />
-        <span>Prism</span>
+        <span>Lanes</span>
       </div>
       <div className="titlebar-center">
         <label className="search">

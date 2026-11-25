@@ -28,11 +28,11 @@ import { readStoreIds, registerExternalExtensions, storeLinks } from "./stores.j
 import { shutdownTorrents, torrentAvailable } from "./torrent.js";
 import type { AddOptions, AddRequest, AppState, ClipboardOffer, CompleteAction, Inspection, JobAction, NetworkConfig, Settings } from "../shared/types.js";
 
-const isDev = !!process.env.PRISM_DEV;
+const isDev = !!process.env.LANES_DEV;
 const ROOT = path.join(__dirname, "..", "..", "..", "..");
 const ASSETS = path.join(ROOT, "assets");
 
-if (process.env.PRISM_HOME) app.setPath("userData", process.env.PRISM_HOME);
+if (process.env.LANES_HOME) app.setPath("userData", process.env.LANES_HOME);
 
 if (!app.requestSingleInstanceLock()) {
   app.quit();
@@ -42,6 +42,28 @@ app.setAppUserModelId("app.prism.downloadmanager");
 
 const dataDir = app.getPath("userData");
 fs.mkdirSync(dataDir, { recursive: true });
+migrateFromPrism();
+
+/**
+ * Lanes was called Prism in 1.0.0. Carry its settings, download list, tools and torrents over once.
+ * The browser extension has to be re-added from the new folder, so the setup page is shown again.
+ */
+function migrateFromPrism(): void {
+  if (process.env.LANES_HOME) return;
+  const old = path.join(app.getPath("appData"), "Prism");
+  if (fs.existsSync(path.join(dataDir, "settings.json")) || !fs.existsSync(path.join(old, "settings.json"))) return;
+  try {
+    for (const name of ["settings.json", "jobs.json", "tools", "torrents"]) {
+      const from = path.join(old, name);
+      if (fs.existsSync(from)) fs.cpSync(from, path.join(dataDir, name), { recursive: true });
+    }
+    const file = path.join(dataDir, "settings.json");
+    const s = JSON.parse(fs.readFileSync(file, "utf8"));
+    fs.writeFileSync(file, JSON.stringify({ ...s, welcomeShown: false, extensionBrowsers: [] }));
+  } catch (e) {
+    console.error("Could not carry over Prism's settings:", (e as Error).message);
+  }
+}
 const store = new SettingsStore(path.join(dataDir, "settings.json"), app.getPath("downloads"));
 const nets = new NetworkManager(
   () => store.settings,
@@ -74,8 +96,8 @@ function extensionDir(): string {
   const src = app.isPackaged ? path.join(process.resourcesPath, "extension") : path.join(ROOT, "extension", "build");
   const dst = path.join(dataDir, "extension");
   try {
-    fs.cpSync(path.join(src, "chrome"), path.join(dst, "Prism Extension"), { recursive: true, force: true });
-    fs.cpSync(path.join(src, "firefox"), path.join(dst, "Prism Extension (Firefox)"), { recursive: true, force: true });
+    fs.cpSync(path.join(src, "chrome"), path.join(dst, "Lanes Extension"), { recursive: true, force: true });
+    fs.cpSync(path.join(src, "firefox"), path.join(dst, "Lanes Extension (Firefox)"), { recursive: true, force: true });
     for (const old of ["chrome", "firefox"]) fs.rmSync(path.join(dst, old), { recursive: true, force: true }); // pre-1.0 layout
     extDirCache = dst;
   } catch {
@@ -83,8 +105,8 @@ function extensionDir(): string {
   }
   return extDirCache;
 }
-const chromiumExtDir = () => (fs.existsSync(path.join(extensionDir(), "Prism Extension")) ? path.join(extensionDir(), "Prism Extension") : path.join(extensionDir(), "chrome"));
-const firefoxExtDir = () => (fs.existsSync(path.join(extensionDir(), "Prism Extension (Firefox)")) ? path.join(extensionDir(), "Prism Extension (Firefox)") : path.join(extensionDir(), "firefox"));
+const chromiumExtDir = () => (fs.existsSync(path.join(extensionDir(), "Lanes Extension")) ? path.join(extensionDir(), "Lanes Extension") : path.join(extensionDir(), "chrome"));
+const firefoxExtDir = () => (fs.existsSync(path.join(extensionDir(), "Lanes Extension (Firefox)")) ? path.join(extensionDir(), "Lanes Extension (Firefox)") : path.join(extensionDir(), "firefox"));
 
 type SetupBrowser = "edge" | "chrome" | "brave" | "opera" | "firefox";
 const BROWSER_EXE: Record<SetupBrowser, string> = { edge: "msedge", chrome: "chrome", brave: "brave", opera: "opera", firefox: "firefox" };
@@ -172,7 +194,7 @@ function createWindow(show = true): void {
     minWidth: 980,
     minHeight: 620,
     show: false,
-    title: "Prism",
+    title: "Lanes",
     icon: icon(),
     backgroundColor: "#00000000",
     titleBarStyle: process.platform === "darwin" ? "hiddenInset" : "hidden",
@@ -198,11 +220,11 @@ function createWindow(show = true): void {
   win.once("ready-to-show", () => {
     if (show) win?.show();
   });
-  // dev aid: PRISM_SNAP=<dir> runs PRISM_SNAP/steps.json ([{name, js, wait}]) and saves a PNG per step
-  if (process.env.PRISM_SNAP) {
-    const dir = process.env.PRISM_SNAP;
+  // dev aid: LANES_SNAP=<dir> runs LANES_SNAP/steps.json ([{name, js, wait}]) and saves a PNG per step
+  if (process.env.LANES_SNAP) {
+    const dir = process.env.LANES_SNAP;
     win.webContents.setBackgroundThrottling(false);
-    const size = /^(\d+)x(\d+)$/.exec(process.env.PRISM_SNAP_SIZE ?? "");
+    const size = /^(\d+)x(\d+)$/.exec(process.env.LANES_SNAP_SIZE ?? "");
     if (size) win.setContentSize(Number(size[1]), Number(size[2]));
     win.webContents.once("did-finish-load", async () => {
       const steps: { name: string; js?: string; wait?: number }[] = JSON.parse(fs.readFileSync(path.join(dir, "steps.json"), "utf8"));
@@ -252,7 +274,7 @@ function showWindow(): void {
 function buildTray(): void {
   const img = icon("tray.png");
   tray = new Tray(img.isEmpty() ? icon() : img);
-  tray.setToolTip("Prism");
+  tray.setToolTip("Lanes");
   tray.on("click", showWindow);
   updateTrayMenu();
 }
@@ -260,10 +282,10 @@ function buildTray(): void {
 function updateTrayMenu(): void {
   if (!tray) return;
   const t = manager.totals();
-  tray.setToolTip(t.active ? `Prism — ${t.active} downloading, ${fmtSpeed(t.speed)}` : "Prism");
+  tray.setToolTip(t.active ? `Lanes — ${t.active} downloading, ${fmtSpeed(t.speed)}` : "Lanes");
   tray.setContextMenu(
     Menu.buildFromTemplate([
-      { label: "Open Prism", click: showWindow },
+      { label: "Open Lanes", click: showWindow },
       { type: "separator" },
       { label: "Resume all", click: () => manager.resumeAll() },
       { label: "Pause all", click: () => manager.pauseAll() },
@@ -678,7 +700,7 @@ app.whenReady().then(async () => {
   extensionDir();
   registerExternalExtensions(STORE_IDS); // no-op until the extension is published
   // First launch after installing: open the extension setup page in the default browser.
-  if (!store.settings.welcomeShown && !process.env.PRISM_SNAP && !process.argv.includes("--hidden")) {
+  if (!store.settings.welcomeShown && !process.env.LANES_SNAP && !process.argv.includes("--hidden")) {
     store.update({ welcomeShown: true });
     if (!store.settings.extensionBrowsers.length) setTimeout(() => void openSetupPage(), 1500);
   }

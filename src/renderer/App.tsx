@@ -12,7 +12,7 @@ import { ClipboardToast, ShutdownBanner, Toasts, useToasts } from "./components/
 import { Icon } from "./components/Icon";
 import { isActive } from "./lib/format";
 
-const api = window.prism;
+const api = window.lanes;
 
 function useAppState(): AppState | null {
   const [s, setS] = useState<AppState | null>(null);

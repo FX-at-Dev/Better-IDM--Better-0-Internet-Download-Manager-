@@ -359,9 +359,9 @@ export function downloadNative(
     "-N",
     "6",
     "--progress-template",
-    "download:PRISM|%(progress.downloaded_bytes)s|%(progress.total_bytes)s|%(progress.total_bytes_estimate)s|%(progress.filename)s",
+    "download:LANES|%(progress.downloaded_bytes)s|%(progress.total_bytes)s|%(progress.total_bytes_estimate)s|%(progress.filename)s",
     "--print",
-    "after_move:PRISMFILE|%(filepath)s",
+    "after_move:LANESFILE|%(filepath)s",
     "-o",
     `${o.outBase}.%(ext)s`,
   ];
@@ -380,11 +380,11 @@ export function downloadNative(
     o.signal.addEventListener("abort", onAbort, { once: true });
 
     const handle = (line: string) => {
-      if (line.startsWith("PRISMFILE|")) {
+      if (line.startsWith("LANESFILE|")) {
         final = line.slice(10).trim();
         return;
       }
-      const i = line.indexOf("PRISM|");
+      const i = line.indexOf("LANES|");
       if (i < 0) {
         if (/ERROR/.test(line)) errTail = line.replace(/^.*?ERROR:\s*/, "");
         return;

@@ -16,8 +16,8 @@ async function load() {
     $("takeover").textContent = s.intercept ? (s.minMB ? `On · files over ${s.minMB} MB` : "On · all files") : "Off";
     $("takeover").classList.toggle("on", !!s.intercept);
   } else {
-    $("status").textContent = "Prism isn't running";
-    $("takeover").textContent = "Prism not running";
+    $("status").textContent = "Lanes isn't running";
+    $("takeover").textContent = "Lanes not running";
   }
 
   const [tab] = await api.tabs.query({ active: true, currentWindow: true });
@@ -44,7 +44,7 @@ async function load() {
   $("page").onclick = async () => {
     $("page").textContent = "Sending…";
     const ok = await api.runtime.sendMessage({ type: "send", url: tab.url, media: true });
-    $("page").textContent = ok ? "Opened in Prism" : "Start Prism first";
+    $("page").textContent = ok ? "Opened in Lanes" : "Start Lanes first";
   };
   $("open").onclick = () => api.runtime.sendMessage({ type: "show" });
 }

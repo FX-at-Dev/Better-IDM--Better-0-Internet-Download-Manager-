@@ -1,23 +1,24 @@
-# Prism
+# Lanes
 
 A download manager that pulls every file over **all of your network connections at once**, wrapped in a Liquid Glass interface.
 
 A from-scratch rebuild of the ideas in [Qorvex](https://github.com/PagalSarthak/qorvex) (MIT), in Electron + TypeScript + React.
 
+Website: https://fx-at-dev.github.io/Better-IDM--Better-0-Internet-Download-Manager-/ (source in [`site/`](site/), published by `.github/workflows/pages.yml`).
+
 ## Download
 
-**[⬇ Download Prism 1.0.0](https://github.com/FX-at-Dev/Better-IDM--Better-0-Internet-Download-Manager-/releases/tag/v1.0.0)** · [all releases](https://github.com/FX-at-Dev/Better-IDM--Better-0-Internet-Download-Manager-/releases/latest)
+**[⬇ Download Lanes](https://fx-at-dev.github.io/Better-IDM--Better-0-Internet-Download-Manager-/)** — the website picks the right file for your system. Or grab any file from the [latest release](https://github.com/FX-at-Dev/Better-IDM--Better-0-Internet-Download-Manager-/releases/latest):
 
-| System | Download |
+| System | File |
 |---|---|
-| Windows (installer) | [Prism-Setup-1.0.0.exe](https://github.com/FX-at-Dev/Better-IDM--Better-0-Internet-Download-Manager-/releases/download/v1.0.0/Prism-Setup-1.0.0.exe) |
-| Windows (portable, no install) | [Prism-1.0.0-portable.exe](https://github.com/FX-at-Dev/Better-IDM--Better-0-Internet-Download-Manager-/releases/download/v1.0.0/Prism-1.0.0-portable.exe) |
-| macOS — Apple Silicon (M1–M4) | [Prism-1.0.0-mac-arm64.dmg](https://github.com/FX-at-Dev/Better-IDM--Better-0-Internet-Download-Manager-/releases/download/v1.0.0/Prism-1.0.0-mac-arm64.dmg) |
-| macOS — Intel | [Prism-1.0.0-mac-x64.dmg](https://github.com/FX-at-Dev/Better-IDM--Better-0-Internet-Download-Manager-/releases/download/v1.0.0/Prism-1.0.0-mac-x64.dmg) |
-| Linux (any distro) | [Prism-1.0.0-linux-x86_64.AppImage](https://github.com/FX-at-Dev/Better-IDM--Better-0-Internet-Download-Manager-/releases/download/v1.0.0/Prism-1.0.0-linux-x86_64.AppImage) |
-| Linux (Debian / Ubuntu) | [prism_1.0.0_amd64.deb](https://github.com/FX-at-Dev/Better-IDM--Better-0-Internet-Download-Manager-/releases/download/v1.0.0/prism_1.0.0_amd64.deb) |
+| Windows | `Lanes-Setup-<version>.exe` (installer) or `Lanes-<version>-portable.exe` |
+| macOS | `Lanes-<version>-mac-arm64.dmg` (Apple Silicon) or `-mac-x64.dmg` (Intel) |
+| Linux | `Lanes-<version>-linux-x86_64.AppImage`, `lanes_<version>_amd64.deb` or `.tar.gz` |
 
 The builds aren't code-signed yet, so the first launch needs one extra click: Windows **More info → Run anyway**; macOS right-click → **Open**.
+
+> Lanes was called **Prism** in version 1.0.0. Installing Lanes replaces it and keeps your settings, download list and unfinished downloads.
 
 ## What's in it
 
@@ -28,14 +29,14 @@ The builds aren't code-signed yet, so the first launch needs one extra click: Wi
 - Pause/resume survives restarts. A resume is refused if the file changed on the server (size, ETag or Last-Modified).
 - A network that keeps failing drops out of that download. If every network is off, the download pauses instead of failing.
 - Global and per-network speed caps, plus per-network connection counts.
-- **Video from any site yt-dlp supports** (YouTube, X, Instagram, TikTok, Dailymotion, Reddit and 1,000+ more). Paste the page link and Prism **asks for the quality first**: every resolution the site offers, with its size, plus Audio and MP3. Playlists offer “up to 1080p”-style choices for all videos at once.
+- **Video from any site yt-dlp supports** (YouTube, X, Instagram, TikTok, Dailymotion, Reddit and 1,000+ more). Paste the page link and Lanes **asks for the quality first**: every resolution the site offers, with its size, plus Audio and MP3. Playlists offer “up to 1080p”-style choices for all videos at once.
   - Plain-HTTP formats (most of YouTube) are resolved once per network, because those links are IP-locked, and download over every network at once.
   - Stream-only sites (HLS/DASH) are downloaded by yt-dlp itself over one network.
   - Separate video and audio are joined with ffmpeg; MP3 is converted with ffmpeg. yt-dlp is installed with one click the first time; ffmpeg installs itself the first time it's needed.
-  - YouTube's JavaScript challenges are solved with deno/node if installed, otherwise with Prism's own executable running as Node.
+  - YouTube's JavaScript challenges are solved with deno/node if installed, otherwise with Lanes's own executable running as Node.
 - **Torrents** via WebTorrent: magnet links, `.torrent` URLs, `.torrent` files (picker or drag & drop), seed-to-ratio. Unlike Qorvex, torrents persist across restarts.
 
-**New in Prism**
+**New in Lanes**
 - **Live graphs**: a per-download speed graph, a per-network speed history, and a combined-speed sparkline in the title bar.
 - **Chunk map**: an IDM-style grid in the details panel showing which network is filling which part of the file, live. The progress bar in each row is coloured per network too.
 - **Scheduler & queues**: any number of queues, each with a time window (overnight windows like 23:00–06:00 work), weekdays, a max-at-once limit, and an action when it finishes (quit / sleep / shut down, always after a 60-second countdown you can cancel).
@@ -48,15 +49,15 @@ The builds aren't code-signed yet, so the first launch needs one extra click: Wi
 
 **Desktop**
 - A tray icon with pause/resume all, close-to-tray, completion notifications and start with Windows.
-- A **clipboard catcher**: copy a link to a file or a magnet link and Prism offers to download it.
+- A **clipboard catcher**: copy a link to a file or a magnet link and Lanes offers to download it.
 - Drag links or `.torrent` files anywhere onto the window.
 
 **Browser extension** (`extension/`, Chrome/Edge/Brave MV3 + Firefox MV2) — the IDM-style integration
-- On first launch after installing, Prism opens a setup page in the default browser (`http://127.0.0.1:6812/welcome`). One **Start** button opens the browser's extensions page and the extension folder side by side; the user switches on Developer mode and drags the folder in, and the page switches to “You're all set” as soon as the extension checks in. It can be reopened from Settings → Browser extension.
-- **One-click install, IDM-style, once the extension is published**: put the store IDs in `package.json` → `prism.extensionStores` and Prism registers the extension with Chrome/Edge/Brave (they then show "Extension added — Enable?"), and the setup page becomes a single "Add to <browser>" button. `npm run pack:store` builds the store packages; see [store/README.md](store/README.md) for the publishing steps, listing text, screenshots and privacy policy.
-- Takes over every browser download automatically and starts it straight away (Settings → Browser extension has the on/off switch, a size threshold, and an optional “Ask before downloading”). If Prism isn't running, the browser keeps the download.
-- Shows a **Download video** button over videos; it opens Prism's quality picker for that page.
-- Right-click menu items: Download with Prism, Download video, and Download all links in selection.
+- On first launch after installing, Lanes opens a setup page in the default browser (`http://127.0.0.1:6812/welcome`). One **Start** button opens the browser's extensions page and the extension folder side by side; the user switches on Developer mode and drags the folder in, and the page switches to “You're all set” as soon as the extension checks in. It can be reopened from Settings → Browser extension.
+- **One-click install, IDM-style, once the extension is published**: put the store IDs in `package.json` → `lanes.extensionStores` and Lanes registers the extension with Chrome/Edge/Brave (they then show "Extension added — Enable?"), and the setup page becomes a single "Add to <browser>" button. `npm run pack:store` builds the store packages; see [store/README.md](store/README.md) for the publishing steps, listing text, screenshots and privacy policy.
+- Takes over every browser download automatically and starts it straight away (Settings → Browser extension has the on/off switch, a size threshold, and an optional “Ask before downloading”). If Lanes isn't running, the browser keeps the download.
+- Shows a **Download video** button over videos; it opens Lanes's quality picker for that page.
+- Right-click menu items: Download with Lanes, Download video, and Download all links in selection.
 - The popup lists media files detected on the page.
 
 ## Run
@@ -72,7 +73,7 @@ npm run dist:linux   # AppImage, .deb, .tar.gz (must run on Linux)
 npm run pack:store   # browser-store packages in release/store/
 ```
 
-npm 11 blocks install scripts by default. `package.json` already allows the ones Prism needs (`electron`, `node-datachannel`, `electron-winstaller`).
+npm 11 blocks install scripts by default. `package.json` already allows the ones Lanes needs (`electron`, `node-datachannel`, `electron-winstaller`).
 
 ## Releases
 

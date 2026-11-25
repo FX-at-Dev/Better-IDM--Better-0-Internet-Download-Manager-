@@ -75,7 +75,7 @@ function nets(addresses: string[]): NetworkManager {
 const sha = (f: string) => crypto.createHash("sha256").update(fs.readFileSync(f)).digest("hex");
 
 before(async () => {
-  tmp = fs.mkdtempSync(path.join(os.tmpdir(), "prism-test-"));
+  tmp = fs.mkdtempSync(path.join(os.tmpdir(), "lanes-test-"));
   server = http.createServer(serve);
   await new Promise<void>((r) => server.listen(0, "127.0.0.1", () => r()));
   base = `http://127.0.0.1:${(server.address() as any).port}`;
@@ -185,7 +185,7 @@ test("manager: downloads, names from headers, verifies checksum, detects duplica
   assert.equal(job.checksum?.algo, "sha256", "algorithm inferred from digest length");
   assert.equal(job.checksum?.state, "ok");
   assert.equal(sha(job.path), SHA);
-  assert.ok(!fs.existsSync(job.path + ".prism-part"));
+  assert.ok(!fs.existsSync(job.path + ".lanes-part"));
   assert.equal(path.dirname(job.path), path.join(dir, "dl", "Others"), "unknown .bin goes to Others");
 
   const dup = mgr.add({ urls: [base + "/ok"], source: "ui" });
@@ -251,6 +251,22 @@ test("manager: a network that can't reach the server doesn't fail the download",
   assert.equal(job.status, "completed", job.error ?? "");
   assert.equal(fs.statSync(job.path).size, 4096);
   await mgr.shutdown();
+});
+
+test("manager: unfinished downloads from Prism 1.0.0 keep their data after the rename", () => {
+  const dir = path.join(tmp, "migrate");
+  fs.mkdirSync(dir);
+  const file = path.join(dir, "big.iso");
+  fs.writeFileSync(file + ".prism-part", "half");
+  fs.writeFileSync(
+    path.join(dir, "jobs.json"),
+    JSON.stringify([{ id: "j1", kind: "http", url: "https://x/big.iso", headers: {}, filename: "big.iso", dir, path: file, status: "paused", size: 8, downloaded: 4, segments: [], order: 1 }]),
+  );
+  const store = new SettingsStore(path.join(dir, "settings.json"), dir);
+  const mgr = new Manager(dir, store, nets(["127.0.0.1"]), new Tools(path.join(dir, "tools")));
+  mgr.load();
+  assert.equal(fs.readFileSync(file + ".lanes-part", "utf8"), "half");
+  assert.ok(!fs.existsSync(file + ".prism-part"));
 });
 
 test("queue windows, including overnight ones", () => {

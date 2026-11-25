@@ -2,7 +2,7 @@ import type { AppState, CompleteAction, QueueDef } from "../../shared/types";
 import { Icon } from "./Icon";
 import { Btn, NumberInput, Select, TextInput, Toggle } from "./ui";
 
-const api = window.prism;
+const api = window.lanes;
 const DAYS = ["S", "M", "T", "W", "T", "F", "S"];
 const DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
@@ -117,7 +117,7 @@ export function SchedulerView({ state }: { state: AppState }) {
                     onChange={(v) => update(q.id, { onComplete: v })}
                     options={[
                       { value: "none", label: "Do nothing" },
-                      { value: "quit", label: "Quit Prism" },
+                      { value: "quit", label: "Quit Lanes" },
                       { value: "sleep", label: "Sleep the PC" },
                       { value: "shutdown", label: "Shut down the PC" },
                     ]}

@@ -5,7 +5,7 @@ import { AreaChart } from "./Charts";
 import { Icon } from "./Icon";
 import { Btn, NumberInput, Toggle } from "./ui";
 
-const api = window.prism;
+const api = window.lanes;
 
 export function NetworksView({ state }: { state: AppState }) {
   const [name, setName] = useState("");
@@ -48,7 +48,7 @@ export function NetworksView({ state }: { state: AppState }) {
         <div className="callout">
           <Icon name="info" size={16} />
           <span>
-            Connect a second network — Ethernet, a USB-tethered phone, or a second Wi-Fi adapter — and Prism will pull from both at once. Networks that share one router
+            Connect a second network — Ethernet, a USB-tethered phone, or a second Wi-Fi adapter — and Lanes will pull from both at once. Networks that share one router
             usually share one internet line, so the gain comes from genuinely separate connections.
           </span>
         </div>
@@ -118,7 +118,7 @@ export function NetworksView({ state }: { state: AppState }) {
             </span>
             <div className="net-name">
               <b>Add a network by IP</b>
-              <span className="muted small">For adapters Prism didn't detect, or a VPN interface.</span>
+              <span className="muted small">For adapters Lanes didn't detect, or a VPN interface.</span>
             </div>
           </div>
           <input className="text" placeholder="Name (optional)" value={name} onChange={(e) => setName(e.target.value)} />

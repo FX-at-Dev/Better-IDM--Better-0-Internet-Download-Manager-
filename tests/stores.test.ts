@@ -10,8 +10,8 @@ const CHROME = "abcdefghijklmnopabcdefghijklmnop";
 const EDGE = "ponmlkjihgfedcbaponmlkjihgfedcba";
 
 function pkgWith(stores: unknown): string {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "prism-stores-"));
-  fs.writeFileSync(path.join(dir, "package.json"), JSON.stringify({ name: "x", prism: { extensionStores: stores } }));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "lanes-stores-"));
+  fs.writeFileSync(path.join(dir, "package.json"), JSON.stringify({ name: "x", lanes: { extensionStores: stores } }));
   return dir;
 }
 
@@ -29,7 +29,7 @@ test("malformed ids are ignored rather than written to the registry", () => {
 });
 
 test("published: browsers are offered the store extension, and the page gets one-click links", () => {
-  const ids = readStoreIds(pkgWith({ chrome: CHROME, edge: EDGE, firefox: "prism-download-manager" }));
+  const ids = readStoreIds(pkgWith({ chrome: CHROME, edge: EDGE, firefox: "lanes-download-manager" }));
   assert.deepEqual(externalKeys(ids), [
     { key: `Software\\Google\\Chrome\\Extensions\\${CHROME}`, url: "https://clients2.google.com/service/update2/crx" },
     { key: `Software\\BraveSoftware\\Brave-Browser\\Extensions\\${CHROME}`, url: "https://clients2.google.com/service/update2/crx" },
@@ -38,7 +38,7 @@ test("published: browsers are offered the store extension, and the page gets one
   const links = storeLinks(ids);
   assert.equal(links.chrome, `https://chromewebstore.google.com/detail/${CHROME}`);
   assert.equal(links.edge, `https://microsoftedge.microsoft.com/addons/detail/${EDGE}`);
-  assert.equal(links.firefox, "https://addons.mozilla.org/firefox/addon/prism-download-manager/");
+  assert.equal(links.firefox, "https://addons.mozilla.org/firefox/addon/lanes-download-manager/");
   const html = welcomePage({ version: "1", chromePath: "C:\\p", firefoxPath: "C:\\f", stores: links });
   assert.ok(html.includes(links.edge!));
 });
@@ -52,7 +52,7 @@ test("the setup page escapes paths and can't be broken out of", () => {
 
 test("macOS: store extension offered through External Extensions files, only for installed browsers", async () => {
   const { externalFiles, registerExternalExtensions } = await import("../src/main/stores.js");
-  const home = fs.mkdtempSync(path.join(os.tmpdir(), "prism-mac-"));
+  const home = fs.mkdtempSync(path.join(os.tmpdir(), "lanes-mac-"));
   const files = externalFiles({ chrome: CHROME, edge: EDGE }, home);
   assert.equal(files.length, 3);
   assert.ok(files[0].file.endsWith(path.join("Google", "Chrome", "External Extensions", `${CHROME}.json`)));

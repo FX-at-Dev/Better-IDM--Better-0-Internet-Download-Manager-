@@ -343,7 +343,7 @@ export interface ClipboardOffer {
   name: string;
 }
 
-export interface PrismApi {
+export interface LanesApi {
   getState(): Promise<AppState>;
   onState(cb: (s: AppState) => void): () => void;
   onClipboard(cb: (o: ClipboardOffer) => void): () => void;

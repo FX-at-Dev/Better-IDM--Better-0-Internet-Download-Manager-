@@ -99,7 +99,7 @@ export interface ManagerHooks {
 const RUNNING: JobStatus[] = ["probing", "downloading", "merging", "seeding"];
 const WAITING: JobStatus[] = ["queued", "scheduled"];
 const CATEGORY_DIR = CATEGORY_FOLDER;
-const PART = ".prism-part";
+const PART = ".lanes-part";
 
 export class Manager {
   jobs = new Map<string, JobRecord>();
@@ -137,6 +137,12 @@ export class Manager {
         if (j.kind === "torrent" && j.status === "queued" && j.completedAt) j.status = "completed";
       }
       if (j.checksum?.state === "running") j.checksum.state = "pending";
+      // unfinished downloads from Prism 1.0.0 kept their data in "<file>.prism-part"
+      if (j.path && j.status !== "completed" && !fs.existsSync(j.path + PART) && fs.existsSync(j.path + ".prism-part")) {
+        try {
+          fs.renameSync(j.path + ".prism-part", j.path + PART);
+        } catch {}
+      }
       this.jobs.set(j.id, j);
     }
   }
@@ -636,7 +642,7 @@ export class Manager {
     const netId = "net-default";
     const onBytes = this.onBytes(rt, job);
     const ext = path.extname(job.path);
-    const base = job.path.slice(0, job.path.length - ext.length) + ".prism-dl";
+    const base = job.path.slice(0, job.path.length - ext.length) + ".lanes-dl";
     const out = await downloadNative(this.tools, {
       url: job.url,
       selector,
@@ -849,9 +855,9 @@ export class Manager {
     for (const p of job.media?.parts ?? []) fs.rmSync(p.file, { force: true });
     if (job.path) fs.rmSync(`${job.path}.merging${path.extname(job.path)}`, { force: true });
     if (job.path && job.kind === "media") {
-      // yt-dlp's own partial files: "<name>.prism-dl.*"
+      // yt-dlp's own partial files: "<name>.lanes-dl.*"
       const ext = path.extname(job.path);
-      const stem = path.basename(job.path, ext) + ".prism-dl";
+      const stem = path.basename(job.path, ext) + ".lanes-dl";
       try {
         for (const f of fs.readdirSync(path.dirname(job.path))) if (f.startsWith(stem)) fs.rmSync(path.join(path.dirname(job.path), f), { force: true });
       } catch {}

@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer, webUtils } from "electron";
-import type { AddRequest, PrismApi } from "../shared/types.js";
+import type { AddRequest, LanesApi } from "../shared/types.js";
 
 function listen<T>(channel: string, cb: (v: T) => void): () => void {
   const fn = (_e: unknown, v: T) => cb(v);
@@ -7,12 +7,12 @@ function listen<T>(channel: string, cb: (v: T) => void): () => void {
   return () => ipcRenderer.removeListener(channel, fn);
 }
 
-// Links sent before the UI subscribed (e.g. the extension woke Prism from the tray) wait here.
+// Links sent before the UI subscribed (e.g. the extension woke Lanes from the tray) wait here.
 const pendingAdds: AddRequest[] = [];
 let addListener: ((r: AddRequest) => void) | null = null;
 ipcRenderer.on("focus-add", (_e, r: AddRequest) => (addListener ? addListener(r) : pendingAdds.push(r)));
 
-const api: PrismApi = {
+const api: LanesApi = {
   getState: () => ipcRenderer.invoke("state"),
   onState: (cb) => listen("state", cb),
   onClipboard: (cb) => listen("clipboard", cb),
@@ -49,4 +49,4 @@ const api: PrismApi = {
   pathForFile: (f) => webUtils.getPathForFile(f),
 };
 
-contextBridge.exposeInMainWorld("prism", api);
+contextBridge.exposeInMainWorld("lanes", api);

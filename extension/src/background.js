@@ -1,4 +1,4 @@
-// Prism browser extension — background. Works as an MV3 service worker (Chrome/Edge/Brave)
+// Lanes browser extension — background. Works as an MV3 service worker (Chrome/Edge/Brave)
 // and as an MV2 background page (Firefox).
 const api = globalThis.browser ?? globalThis.chrome;
 const act = api.action || api.browserAction;
@@ -10,8 +10,8 @@ const MAX_MEDIA = 25;
 const base = (c) => `http://127.0.0.1:${c.port}`;
 const headers = (c) => ({
   "Content-Type": "application/json",
-  "X-Prism-Extension": "1",
-  ...(c.token ? { "X-Prism-Token": c.token } : {}),
+  "X-Lanes-Extension": "1",
+  ...(c.token ? { "X-Lanes-Token": c.token } : {}),
 });
 
 function badge(text, title, bad) {
@@ -33,13 +33,13 @@ async function request(path, body, timeout = 6000) {
         : { method: "POST", headers: headers(c), body: JSON.stringify(body), signal: ctrl.signal },
     );
     if (r.status === 403) {
-      badge("!", "Prism rejected the request — check the token in the extension popup", true);
+      badge("!", "Lanes rejected the request — check the token in the extension popup", true);
       return null;
     }
     if (!r.ok) return null;
     return await r.json().catch(() => ({}));
   } catch {
-    return null; // Prism isn't running: the browser keeps the download
+    return null; // Lanes isn't running: the browser keeps the download
   } finally {
     clearTimeout(timer);
   }
@@ -47,7 +47,7 @@ async function request(path, body, timeout = 6000) {
 
 async function post(body) {
   const data = await request("/api/add", body);
-  if (data) badge("✓", "Sent to Prism");
+  if (data) badge("✓", "Sent to Lanes");
   return !!data;
 }
 
@@ -59,23 +59,23 @@ async function sendDirect(url, referer, filename) {
   return post({ url, cookie, referer: referer || "", filename: filename || "", ua: navigator.userAgent });
 }
 
-// No quality = Prism opens its quality picker.
+// No quality = Lanes opens its quality picker.
 // Chrome Web Store builds (tools/pack-store.mjs flips this) leave YouTube to the app: store policy
-// doesn't allow extensions that download YouTube videos. Pasting the link into Prism still works.
+// doesn't allow extensions that download YouTube videos. Pasting the link into Lanes still works.
 const STORE_BUILD = false;
 const storeBlocked = (url) => STORE_BUILD && /^https?:\/\/([^/]+\.)?(youtube\.com|youtu\.be)(\/|$)/i.test(url || "");
 const sendMedia = (url, quality) => (storeBlocked(url) ? Promise.resolve(false) : post({ url, media: true, ...(quality ? { quality } : {}) }));
 
 async function sync() {
   const data = await request("/api/ping", undefined, 2000);
-  if (!data || data.app !== "prism") return null;
+  if (!data || data.app !== "lanes") return null;
   const patch = { intercept: !!data.settings.intercept, minMB: Number(data.settings.interceptMinMB) || 0 };
   await api.storage.local.set(patch);
   return { ...data, ...patch };
 }
 
-// 1) Take over every browser download automatically. Prism's own setting decides (checked live,
-//    so changes in Prism apply at once); if Prism isn't running the browser carries on as normal.
+// 1) Take over every browser download automatically. Lanes's own setting decides (checked live,
+//    so changes in Lanes apply at once); if Lanes isn't running the browser carries on as normal.
 api.downloads.onCreated.addListener(async (item) => {
   const url = item.finalUrl || item.url;
   if (!/^https?:/.test(url)) return; // blob:/data: downloads can't be handed over
@@ -95,12 +95,12 @@ api.downloads.onCreated.addListener(async (item) => {
 // 2) Right-click menus
 function menus() {
   api.contextMenus.removeAll(() => {
-    api.contextMenus.create({ id: "prism-direct", title: "Download with Prism", contexts: ["link", "video", "audio", "image"] });
-    api.contextMenus.create({ id: "prism-media", title: "Download video with Prism", contexts: ["link", "video", "page"] });
-    api.contextMenus.create({ id: "prism-links", title: "Download all links in selection", contexts: ["selection"] });
+    api.contextMenus.create({ id: "lanes-direct", title: "Download with Lanes", contexts: ["link", "video", "audio", "image"] });
+    api.contextMenus.create({ id: "lanes-media", title: "Download video with Lanes", contexts: ["link", "video", "page"] });
+    api.contextMenus.create({ id: "lanes-links", title: "Download all links in selection", contexts: ["selection"] });
   });
 }
-// Check in with Prism as soon as we're installed (its setup page then shows "Connected"), and on browser start.
+// Check in with Lanes as soon as we're installed (its setup page then shows "Connected"), and on browser start.
 api.runtime.onInstalled.addListener(() => {
   menus();
   sync();
@@ -111,8 +111,8 @@ api.runtime.onStartup.addListener(() => {
 });
 
 api.contextMenus.onClicked.addListener(async (info, tab) => {
-  if (info.menuItemId === "prism-media") return sendMedia(info.linkUrl || tab.url);
-  if (info.menuItemId === "prism-links") {
+  if (info.menuItemId === "lanes-media") return sendMedia(info.linkUrl || tab.url);
+  if (info.menuItemId === "lanes-links") {
     try {
       const [{ result }] = await api.scripting.executeScript({
         target: { tabId: tab.id },

@@ -1,5 +1,5 @@
-// Packs the extension for the stores: release/store/prism-chrome-edge-<v>.zip (Chrome Web Store and
-// Microsoft Edge Add-ons take the same MV3 zip) and release/store/prism-firefox-<v>.zip (addons.mozilla.org).
+// Packs the extension for the stores: release/store/lanes-chrome-edge-<v>.zip (Chrome Web Store and
+// Microsoft Edge Add-ons take the same MV3 zip) and release/store/lanes-firefox-<v>.zip (addons.mozilla.org).
 // Run `npm run pack:store`, then follow store/README.md.
 import fs from "node:fs";
 import path from "node:path";
@@ -29,8 +29,8 @@ function stage(from, name, storeBuild) {
 }
 
 for (const [name, dir] of [
-  [`prism-chrome-edge-${pkg.version}.zip`, stage(path.join(root, "extension", "build", "chrome"), "chrome", true)],
-  [`prism-firefox-${pkg.version}.zip`, stage(path.join(root, "extension", "build", "firefox"), "firefox", false)],
+  [`lanes-chrome-edge-${pkg.version}.zip`, stage(path.join(root, "extension", "build", "chrome"), "chrome", true)],
+  [`lanes-firefox-${pkg.version}.zip`, stage(path.join(root, "extension", "build", "firefox"), "firefox", false)],
 ]) {
   const file = path.join(out, name);
   fs.rmSync(file, { force: true });

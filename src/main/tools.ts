@@ -30,14 +30,14 @@ export class Tools {
   }
 
   get ytdlp(): string | null {
-    const env = process.env.PRISM_YTDLP;
+    const env = process.env.LANES_YTDLP;
     if (env && fs.existsSync(env)) return env;
     const l = this.local("yt-dlp");
     return fs.existsSync(l) ? l : which("yt-dlp");
   }
 
   get ffmpeg(): string | null {
-    const env = process.env.PRISM_FFMPEG;
+    const env = process.env.LANES_FFMPEG;
     if (env && fs.existsSync(env)) return env;
     const l = this.local("ffmpeg");
     return fs.existsSync(l) ? l : which("ffmpeg");
@@ -45,7 +45,7 @@ export class Tools {
 
   /**
    * A JavaScript runtime yt-dlp can use for YouTube's challenges. Without deno or
-   * node on PATH, Prism's own executable runs as Node (ELECTRON_RUN_AS_NODE, see env).
+   * node on PATH, Lanes's own executable runs as Node (ELECTRON_RUN_AS_NODE, see env).
    */
   get jsRuntime(): string | null {
     if (which("deno")) return null; // yt-dlp finds deno on its own
@@ -85,7 +85,7 @@ export class Tools {
         });
         if (!isWin) fs.chmodSync(dest, 0o755);
       } else {
-        if (!isWin) throw new Error("Install ffmpeg with your package manager (brew / apt), then restart Prism.");
+        if (!isWin) throw new Error("Install ffmpeg with your package manager (brew / apt), then restart Lanes.");
         const zip = path.join(this.dir, "ffmpeg.zip");
         await downloadTo(
           "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip",

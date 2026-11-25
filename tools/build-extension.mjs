@@ -9,9 +9,9 @@ const out = path.join(root, "extension", "build");
 const pkg = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
 
 const common = {
-  name: "Prism Download Manager",
+  name: "Lanes Download Manager",
   version: pkg.version,
-  description: "Send downloads and videos to Prism, which downloads over all your connections at once.",
+  description: "Send downloads and videos to Lanes, which downloads over all your connections at once.",
   icons: { 16: "icons/16.png", 32: "icons/32.png", 48: "icons/48.png", 128: "icons/128.png" },
   content_scripts: [{ matches: ["<all_urls>"], js: ["content.js"], all_frames: true }],
 };
@@ -22,7 +22,7 @@ const chrome = {
   permissions: ["downloads", "contextMenus", "cookies", "storage", "webRequest", "tabs", "scripting"],
   host_permissions: ["<all_urls>"],
   background: { service_worker: "background.js" },
-  action: { default_popup: "popup.html", default_title: "Prism", default_icon: common.icons },
+  action: { default_popup: "popup.html", default_title: "Lanes", default_icon: common.icons },
 };
 
 const firefox = {
@@ -30,12 +30,12 @@ const firefox = {
   ...common,
   permissions: ["downloads", "contextMenus", "cookies", "storage", "webRequest", "tabs", "<all_urls>"],
   background: { scripts: ["background.js"] },
-  browser_action: { default_popup: "popup.html", default_title: "Prism", default_icon: common.icons },
+  browser_action: { default_popup: "popup.html", default_title: "Lanes", default_icon: common.icons },
   browser_specific_settings: {
     gecko: {
-      id: "prism-dm@local",
+      id: "lanes-dm@local",
       strict_min_version: "109.0",
-      // required by addons.mozilla.org: nothing is sent to the developer or third parties — only to Prism on this PC
+      // required by addons.mozilla.org: nothing is sent to the developer or third parties — only to Lanes on this PC
       data_collection_permissions: { required: ["none"] },
     },
   },
@@ -62,8 +62,8 @@ for (const [name, manifest] of [
 }
 console.log("extension built →", path.relative(root, out));
 
-// Uninstaller cleanup for the "offer the store extension" registry keys Prism writes (see src/main/stores.ts).
-const ids = pkg.prism?.extensionStores ?? {};
+// Uninstaller cleanup for the "offer the store extension" registry keys Lanes writes (see src/main/stores.ts).
+const ids = pkg.lanes?.extensionStores ?? {};
 const idOk = (s) => /^[a-p]{32}$/.test(s ?? "");
 const keys = [];
 const reg = (...parts) => parts.join("\\");

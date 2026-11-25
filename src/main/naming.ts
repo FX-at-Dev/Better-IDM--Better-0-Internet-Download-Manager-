@@ -156,7 +156,7 @@ export function uniquePath(dir: string, name: string, taken: Set<string> = new S
 }
 
 function exists(p: string): boolean {
-  return fs.existsSync(p) || fs.existsSync(p + ".prism-part");
+  return fs.existsSync(p) || fs.existsSync(p + ".lanes-part");
 }
 
 /** Glob on host names: "*.github.com" matches "github.com" and "objects.github.com". */

@@ -1,6 +1,6 @@
-// The setup page Prism opens in the user's browser on first launch. It is served by the local
+// The setup page Lanes opens in the user's browser on first launch. It is served by the local
 // API (http://127.0.0.1:<port>/welcome), detects which browser it is in, and flips to
-// "You're all set" by itself once the extension pings Prism.
+// "You're all set" by itself once the extension pings Lanes.
 //  - Once the extension is in the browser's store: one "Add to <browser>" button.
 //  - Until then: one button that opens the extensions page and the extension folder side by side,
 //    then the user switches on Developer mode and drags the folder in.
@@ -19,7 +19,7 @@ export function welcomePage(o: { version: string; chromePath: string; firefoxPat
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Add Prism to your browser</title>
+<title>Add Lanes to your browser</title>
 <link rel="icon" href="data:image/svg+xml,${encodeURIComponent(LOGO)}" />
 <style>
   :root { --accent:#4f8cff; --ok:#3fb67a; --bg:#17181b; --layer:#1d1e22; --card:#232429; --border:rgba(255,255,255,.08);
@@ -65,11 +65,11 @@ export function welcomePage(o: { version: string; chromePath: string; firefoxPat
 </head>
 <body>
 <main>
-  <header>${LOGO}<div><b>Prism</b><span>Version ${esc(o.version)}</span></div></header>
+  <header>${LOGO}<div><b>Lanes</b><span>Version ${esc(o.version)}</span></div></header>
 
   <section id="setup">
-    <h1>Add Prism to <span class="bname">your browser</span></h1>
-    <p class="lead">Then every download from <span class="bname">your browser</span> goes to Prism automatically, and videos get a <b>Download video</b> button.</p>
+    <h1>Add Lanes to <span class="bname">your browser</span></h1>
+    <p class="lead">Then every download from <span class="bname">your browser</span> goes to Lanes automatically, and videos get a <b>Download video</b> button.</p>
 
     <!-- published: one click -->
     <div class="card hidden" id="store">
@@ -82,7 +82,7 @@ export function welcomePage(o: { version: string; chromePath: string; firefoxPat
       <button class="primary big-btn" data-act="both">Start</button>
       <ol class="steps">
         <li><div><b>Switch on Developer mode</b> on the page that opens <span class="mock">Developer mode <i class="sw"></i></span><p id="dev-where">It's in the left sidebar.</p></div></li>
-        <li><div><b>Drag the highlighted “Prism Extension” folder</b> from the folder window onto that page.<p>That's it — this page will say so.</p></div></li>
+        <li><div><b>Drag the highlighted “Lanes Extension” folder</b> from the folder window onto that page.<p>That's it — this page will say so.</p></div></li>
       </ol>
       <details>
         <summary>Drag and drop not working?</summary>
@@ -97,7 +97,7 @@ export function welcomePage(o: { version: string; chromePath: string; firefoxPat
         <li><div><b>Click “Load Temporary Add-on…”</b> on the page that opens</div></li>
         <li><div><b>Pick the highlighted manifest.json</b><p class="path"><span id="ff-path">${esc(o.firefoxPath)}</span><button data-copy="#ff-path">Copy</button></p></div></li>
       </ol>
-      <p class="note">Firefox removes add-ons loaded this way when it restarts, until Prism's add-on is published on addons.mozilla.org. For now, Edge or Chrome is the better choice.</p>
+      <p class="note">Firefox removes add-ons loaded this way when it restarts, until Lanes's add-on is published on addons.mozilla.org. For now, Edge or Chrome is the better choice.</p>
     </div>
 
     <div class="status" id="status"><span class="dot"></span><span id="status-text">Waiting for the extension…</span></div>
@@ -106,7 +106,7 @@ export function welcomePage(o: { version: string; chromePath: string; firefoxPat
   <section id="done" class="hidden done">
     <div class="tick">✓</div>
     <h1>You're all set</h1>
-    <p class="lead" style="margin:8px auto 0">Prism is connected to <span class="bname">your browser</span>. Downloads now go straight to Prism, sorted into your Downloads folder. You can close this tab.</p>
+    <p class="lead" style="margin:8px auto 0">Lanes is connected to <span class="bname">your browser</span>. Downloads now go straight to Lanes, sorted into your Downloads folder. You can close this tab.</p>
   </section>
 </main>
 <div class="toast" id="toast"></div>
@@ -141,8 +141,8 @@ export function welcomePage(o: { version: string; chromePath: string; firefoxPat
     b.addEventListener("click", async () => {
       try {
         const r = await fetch("/welcome/open", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: b.dataset.act, browser: key }) });
-        toast(r.ok ? "Opening the extensions page and the folder…" : "Prism couldn't open them — use the steps below");
-      } catch { toast("Prism isn't running"); }
+        toast(r.ok ? "Opening the extensions page and the folder…" : "Lanes couldn't open them — use the steps below");
+      } catch { toast("Lanes isn't running"); }
     }),
   );
 
@@ -155,14 +155,14 @@ export function welcomePage(o: { version: string; chromePath: string; firefoxPat
         connected = true;
         document.getElementById("setup").classList.add("hidden");
         show("done");
-        document.title = "Prism is connected";
+        document.title = "Lanes is connected";
       } else if (!mine) {
         document.getElementById("status-text").textContent = s.connected.length
           ? "Already connected in " + s.connected.join(", ") + ". Waiting for " + (browser || "this browser") + "…"
           : "Waiting for the extension… this page updates by itself.";
       }
     } catch {
-      document.getElementById("status-text").textContent = "Prism isn't running. Start Prism, then reload this page.";
+      document.getElementById("status-text").textContent = "Lanes isn't running. Start Lanes, then reload this page.";
     }
     if (!connected) setTimeout(poll, 1500);
   }
@@ -172,7 +172,7 @@ export function welcomePage(o: { version: string; chromePath: string; firefoxPat
 </html>`;
 }
 
-const LOGO = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><rect width="24" height="24" rx="5" fill="#4f8cff"/><path d="M12 4.8 19.2 18H4.8z" fill="#fff"/><path d="M12 4.8 19.2 18H12z" fill="#eaf0ff"/><path d="M12 9.6v5.1m0 0-1.9-1.9m1.9 1.9 1.9-1.9" stroke="#3a72ea" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>`;
+const LOGO = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><rect width="24" height="24" rx="5" fill="#4f8cff"/><path d="M7.2 4.8 12 15.4M12 4.8v10.6M16.8 4.8 12 15.4M7.4 19.2h9.2" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>`;
 
 /** "Edge", "Chrome", "Firefox", "Opera" from a request's User-Agent (Brave reports itself as Chrome). */
 export function browserFromUA(ua: string): string {

@@ -7,7 +7,7 @@ import { Btn, Select } from "./ui";
 import type { Filter } from "./Sidebar";
 import { ExtensionBanner } from "./Overlays";
 
-const api = window.prism;
+const api = window.lanes;
 
 type SortKey = "added" | "name" | "size" | "progress" | "order";
 

@@ -94,16 +94,16 @@ export function startApi(deps: ApiDeps, port: number): Promise<http.Server> {
 
     const s = deps.settings();
     if (s.apiToken) {
-      const got = String(req.headers["x-prism-token"] ?? "");
+      const got = String(req.headers["x-lanes-token"] ?? req.headers["x-prism-token"] ?? ""); // x-prism-*: extension from 1.0.0
       const a = Buffer.from(got);
       const b = Buffer.from(s.apiToken);
       if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) return send(403, { error: "bad token" });
     }
 
     if (req.method === "GET" && url.pathname === "/api/ping") {
-      if (req.headers["x-prism-extension"] === "1") deps.extensionSeen(browserFromUA(String(req.headers["user-agent"] ?? "")));
+      if (req.headers["x-lanes-extension"] === "1" || req.headers["x-prism-extension"] === "1") deps.extensionSeen(browserFromUA(String(req.headers["user-agent"] ?? "")));
       return send(200, {
-        app: "prism",
+        app: "lanes",
         version: deps.version,
         settings: { intercept: s.intercept, interceptMinMB: s.interceptMinMB, defaultQuality: s.defaultQuality },
       });
@@ -170,7 +170,7 @@ function cors(req: http.IncomingMessage): Record<string, string> {
   return {
     "Access-Control-Allow-Origin": origin,
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, X-Prism-Token, X-Prism-Extension",
+    "Access-Control-Allow-Headers": "Content-Type, X-Lanes-Token, X-Lanes-Extension, X-Prism-Token, X-Prism-Extension",
     Vary: "Origin",
   };
 }

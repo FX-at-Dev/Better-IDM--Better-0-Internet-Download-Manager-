@@ -1,4 +1,4 @@
-# Builds Prism for Windows, macOS and Linux on GitHub's own machines.
+# Builds Lanes for Windows, macOS and Linux on GitHub's own machines.
 #  - Every push / pull request: build + test (installers kept as downloadable workflow artifacts).
 #  - Pushing a version tag (git tag v1.0.0 && git push origin v1.0.0): also publishes a GitHub Release
 #    with all installers and the browser-store packages attached.
@@ -57,7 +57,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: prism-${{ matrix.name }}
+          name: lanes-${{ matrix.name }}
           if-no-files-found: error
           path: |
             release/*.exe
@@ -85,23 +85,23 @@ jobs:
 
       - uses: softprops/action-gh-release@v2
         with:
-          name: Prism ${{ github.ref_name }}
+          name: Lanes ${{ github.ref_name }}
           generate_release_notes: true
           body: |
             ## Download
 
             | System | File |
             |---|---|
-            | **Windows** (installer) | `Prism-Setup-*.exe` |
-            | Windows (portable, no install) | `Prism-*-portable.exe` |
-            | **macOS** Apple Silicon (M1–M4) | `Prism-*-mac-arm64.dmg` |
-            | macOS Intel | `Prism-*-mac-x64.dmg` |
-            | **Linux** (any distro) | `Prism-*-linux-x86_64.AppImage` |
-            | Linux (Debian / Ubuntu) | `prism_*_amd64.deb` |
+            | **Windows** (installer) | `Lanes-Setup-*.exe` |
+            | Windows (portable, no install) | `Lanes-*-portable.exe` |
+            | **macOS** Apple Silicon (M1–M4) | `Lanes-*-mac-arm64.dmg` |
+            | macOS Intel | `Lanes-*-mac-x64.dmg` |
+            | **Linux** (any distro) | `Lanes-*-linux-x86_64.AppImage` |
+            | Linux (Debian / Ubuntu) | `lanes_*_amd64.deb` |
 
-            **First launch:** the installers aren't code-signed yet. On Windows click **More info → Run anyway**. On macOS right-click Prism → **Open** → **Open** (once). On Linux, make the AppImage executable (`chmod +x`) and run it.
+            **First launch:** the installers aren't code-signed yet. On Windows click **More info → Run anyway**. On macOS right-click Lanes → **Open** → **Open** (once). On Linux, make the AppImage executable (`chmod +x`) and run it.
 
-            The `prism-chrome-edge-*.zip` and `prism-firefox-*.zip` files are the browser-extension packages for the Chrome Web Store, Edge Add-ons and Firefox Add-ons.
+            The `lanes-chrome-edge-*.zip` and `lanes-firefox-*.zip` files are the browser-extension packages for the Chrome Web Store, Edge Add-ons and Firefox Add-ons.
           files: |
             dist/**/*.exe
             dist/**/*.dmg
@@ -109,5 +109,5 @@ jobs:
             dist/**/*.AppImage
             dist/**/*.deb
             dist/**/*.tar.gz
-            dist/**/prism-chrome-edge-*.zip
-            dist/**/prism-firefox-*.zip
+            dist/**/lanes-chrome-edge-*.zip
+            dist/**/lanes-firefox-*.zip

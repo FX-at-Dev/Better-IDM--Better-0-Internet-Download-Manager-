@@ -22,7 +22,7 @@ before(async () => {
         calls.seen.push(b);
         settings.extensionBrowsers = [...new Set([...settings.extensionBrowsers, b])];
       },
-      extensionPaths: () => ({ chrome: "C:\\Users\\a\\Prism\\extension\\chrome", firefox: "C:\\x\\firefox\\manifest.json" }),
+      extensionPaths: () => ({ chrome: "C:\\Users\\a\\Lanes\\extension\\chrome", firefox: "C:\\x\\firefox\\manifest.json" }),
       storeLinks: () => ({}),
       openForSetup: (a, b) => void calls.open.push(`${a}:${b}`),
     },
@@ -48,8 +48,8 @@ test("setup page is served with the extension folder and a locked-down CSP", asy
   const r = await req("GET", "/welcome");
   assert.equal(r.status, 200);
   assert.match(r.headers["content-type"] ?? "", /text\/html/);
-  assert.match(r.text, /Add Prism to/);
-  assert.ok(r.text.includes("C:\\Users\\a\\Prism\\extension\\chrome"));
+  assert.match(r.text, /Add Lanes to/);
+  assert.ok(r.text.includes("C:\\Users\\a\\Lanes\\extension\\chrome"));
   assert.match(String(r.headers["content-security-policy"]), /connect-src 'self'/);
 });
 
@@ -78,7 +78,7 @@ test("DNS rebinding: a foreign Host header is refused everywhere", async () => {
 
 test("the extension checking in marks its browser as connected", async () => {
   const edgeUA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0 Safari/537.36 Edg/140.0";
-  const r = await req("GET", "/api/ping", { Origin: "chrome-extension://abc", "X-Prism-Extension": "1", "User-Agent": edgeUA });
+  const r = await req("GET", "/api/ping", { Origin: "chrome-extension://abc", "X-Lanes-Extension": "1", "User-Agent": edgeUA });
   assert.equal(r.status, 200);
   assert.deepEqual(calls.seen, ["Edge"]);
   const s = await req("GET", "/welcome/status");

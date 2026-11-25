@@ -6,7 +6,7 @@ import { FileIcon } from "./DownloadList";
 import { Icon } from "./Icon";
 import { Btn, Select } from "./ui";
 
-const api = window.prism;
+const api = window.lanes;
 
 export function DetailPanel({ job: j, state, colors, onClose }: { job: JobView; state: AppState; colors: Record<string, string>; onClose: () => void }) {
   const pct = percent(j);

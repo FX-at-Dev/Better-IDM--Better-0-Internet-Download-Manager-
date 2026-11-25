@@ -9,7 +9,7 @@ const root = path.join(__dirname, "..");
 const shot = path.join(root, "store", "screenshots", "2-multi-network.png");
 const shotUrl = fs.existsSync(shot) ? require("url").pathToFileURL(shot).href : "";
 
-const LOGO = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><rect width="24" height="24" rx="5" fill="#4f8cff"/><path d="M12 4.8 19.2 18H4.8z" fill="#fff"/><path d="M12 4.8 19.2 18H12z" fill="#eaf0ff"/><path d="M12 9.6v5.1m0 0-1.9-1.9m1.9 1.9 1.9-1.9" stroke="#3a72ea" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>`;
+const LOGO = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><rect width="24" height="24" rx="5" fill="#4f8cff"/><path d="M7.2 4.8 12 15.4M12 4.8v10.6M16.8 4.8 12 15.4M7.4 19.2h9.2" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>`;
 
 const page = (w, h, body) => `<!doctype html><html><head><meta charset="utf-8"><style>
   *{box-sizing:border-box;margin:0}
@@ -25,7 +25,7 @@ const small = page(
   280,
   `<div style="padding:34px 32px;height:100%;display:flex;flex-direction:column;justify-content:center;gap:14px">
      <div class="logo" style="width:64px;height:64px">${LOGO}</div>
-     <h1 style="font-size:40px">Prism</h1>
+     <h1 style="font-size:40px">Lanes</h1>
      <p style="font-size:17px;line-height:1.35;max-width:360px">Faster downloads over every connection.<br>Any video, in the quality you pick.</p>
    </div>`,
 );
@@ -36,7 +36,7 @@ const marquee = page(
   `<div style="display:flex;height:100%;align-items:center;padding-left:90px;gap:70px">
      <div style="flex:none;width:420px;display:flex;flex-direction:column;gap:18px">
        <div class="logo" style="width:80px;height:80px">${LOGO}</div>
-       <h1 style="font-size:60px">Prism</h1>
+       <h1 style="font-size:60px">Lanes</h1>
        <p style="font-size:22px;line-height:1.4">Every download, faster — over all your connections at once. Videos from 1,000+ sites, in the quality you pick.</p>
      </div>
      ${shotUrl ? `<img src="${shotUrl}" style="width:820px;border-radius:14px;box-shadow:0 30px 80px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.08);transform:translateY(60px)">` : ""}
@@ -45,7 +45,7 @@ const marquee = page(
 
 async function render(html, w, h, out) {
   const win = new BrowserWindow({ width: w, height: h, show: false, useContentSize: true, webPreferences: { offscreen: true } });
-  const tmp = path.join(app.getPath("temp"), `prism-store-art-${w}x${h}.html`); // too big for a data: URL
+  const tmp = path.join(app.getPath("temp"), `lanes-store-art-${w}x${h}.html`); // too big for a data: URL
   fs.writeFileSync(tmp, html);
   await win.loadFile(tmp);
   fs.rmSync(tmp, { force: true });

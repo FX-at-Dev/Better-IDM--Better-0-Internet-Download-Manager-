@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lanes — free download manager that uses every connection</title>
+    <meta name="description" content="Lanes is a free, open-source download manager for Windows, macOS and Linux. It pulls each file over all your networks at once, downloads videos in the quality you pick, and catches downloads from your browser." />
+    <meta name="theme-color" content="#111216" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Lanes — every connection, one download" />
+    <meta property="og:description" content="Free download manager for Windows, macOS and Linux. Multi-network downloads, video in the quality you pick, browser integration." />
+    <meta property="og:image" content="img/og.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png" />
+    <link rel="apple-touch-icon" href="img/icon-512.png" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <a class="skip" href="#download">Skip to downloads</a>
+
+    <header class="nav">
+      <div class="wrap nav-inner">
+        <a class="brand" href="#top" aria-label="Lanes home">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="5.5" fill="var(--accent)" /><path d="M7.2 4.8 12 15.4M12 4.8v10.6M16.8 4.8 12 15.4M7.4 19.2h9.2" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none" /></svg>
+          Lanes
+        </a>
+        <nav class="links" aria-label="Sections">
+          <a href="#how">How it works</a>
+          <a href="#features">Features</a>
+          <a href="#extension">Browser</a>
+          <a href="#faq">FAQ</a>
+        </nav>
+        <div class="nav-actions">
+          <a class="btn ghost small" href="https://github.com/FX-at-Dev/Better-IDM--Better-0-Internet-Download-Manager-" rel="noopener">
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0a8 8 0 0 0-2.53 15.59c.4.07.55-.17.55-.38v-1.33c-2.23.48-2.7-1.07-2.7-1.07-.36-.92-.89-1.17-.89-1.17-.73-.5.06-.49.06-.49.8.06 1.23.83 1.23.83.72 1.22 1.88.87 2.33.66.07-.52.28-.87.5-1.07-1.78-.2-3.65-.89-3.65-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.28.82 2.15 0 3.07-1.87 3.75-3.66 3.95.29.25.54.73.54 1.48v2.2c0 .21.15.46.55.38A8 8 0 0 0 8 0Z" /></svg>
+            GitHub
+          </a>
+          <a class="btn primary small" href="#download">Download</a>
+        </div>
+      </div>
+    </header>
+
+    <main id="top">
+      <!-- hero -->
+      <section class="hero">
+        <div class="wrap hero-grid">
+          <div class="hero-copy">
+            <p class="eyebrow">Free · open source · Windows, macOS, Linux</p>
+            <h1>Every connection.<br /><span>One download.</span></h1>
+            <p class="lead">
+              Lanes pulls each file over all your networks at the same time — Wi-Fi, Ethernet and your phone together — downloads videos from 1,000+ sites in the quality you choose, and catches
+              downloads straight from your browser.
+            </p>
+            <div class="cta">
+              <a class="btn primary big" id="hero-download" href="#download">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 19.5h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                <span id="hero-label">Download Lanes</span>
+              </a>
+              <a class="btn ghost big" href="#download">All downloads</a>
+            </div>
+            <p class="cta-meta" id="hero-meta">Free · no ads · no account</p>
+          </div>
+
+          <!-- the idea, drawn: three networks merge into one file -->
+          <figure class="lanes-art" aria-label="Three networks downloading one file together">
+            <svg viewBox="0 0 520 300" role="img">
+              <defs>
+                <linearGradient id="fade" x1="0" x2="1"><stop offset="0" stop-color="var(--panel)" stop-opacity="1" /><stop offset=".25" stop-color="var(--panel)" stop-opacity="0" /></linearGradient>
+              </defs>
+              <g class="lane l1"><path d="M30 60 C 200 60, 250 150, 380 150" /><circle r="5" /></g>
+              <g class="lane l2"><path d="M30 150 L 380 150" /><circle r="5" /></g>
+              <g class="lane l3"><path d="M30 240 C 200 240, 250 150, 380 150" /><circle r="5" /></g>
+              <g class="net-tags">
+                <g transform="translate(30 32)"><rect class="tag t1" width="96" height="24" rx="12" /><text x="48" y="16">Wi-Fi</text></g>
+                <g transform="translate(30 122)"><rect class="tag t2" width="96" height="24" rx="12" /><text x="48" y="16">Ethernet</text></g>
+                <g transform="translate(30 212)"><rect class="tag t3" width="96" height="24" rx="12" /><text x="48" y="16">Phone</text></g>
+              </g>
+              <g class="file" transform="translate(388 112)">
+                <rect class="file-card" width="116" height="76" rx="12" />
+                <text class="file-name" x="14" y="26">ubuntu.iso</text>
+                <rect class="file-track" x="14" y="40" width="88" height="6" rx="3" />
+                <rect class="file-fill" x="14" y="40" width="88" height="6" rx="3" />
+                <text class="file-speed" x="14" y="64">3 networks</text>
+              </g>
+            </svg>
+          </figure>
+        </div>
+
+        <div class="wrap shot-hero">
+          <img src="img/2-multi-network.png" width="1280" height="800" alt="Lanes downloading a file over Wi-Fi, Ethernet and a phone at once, with a chunk map and per-network speeds" />
+        </div>
+      </section>
+
+      <!-- how it works -->
+      <section class="section" id="how">
+        <div class="wrap">
+          <p class="eyebrow">How it works</p>
+          <h2>One file. Many lanes.</h2>
+          <p class="section-lead">Most download managers open several connections over one network. Lanes does that on every network you have, at once.</p>
+          <ol class="steps">
+            <li>
+              <span class="step-n">1</span>
+              <h3>Split</h3>
+              <p>The file is cut into pieces. Each network opens its own connections and starts on a piece.</p>
+            </li>
+            <li>
+              <span class="step-n">2</span>
+              <h3>Share the work</h3>
+              <p>When a connection finishes, it takes half of the biggest piece still left — so the fastest network carries the most and nothing waits at the end.</p>
+            </li>
+            <li>
+              <span class="step-n">3</span>
+              <h3>Done, verified</h3>
+              <p>Pieces land straight in the file. Every response is checked before it's written, and resume survives crashes and restarts.</p>
+            </li>
+          </ol>
+          <p class="honest">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 11v5M12 8h.01" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" /></svg>
+            <span>Honest note: a big speed-up needs genuinely separate internet connections — say home Wi-Fi plus your phone's data. Wi-Fi and Ethernet on the same router share one line. On a single network, Lanes still uses many connections at once.</span>
+          </p>
+        </div>
+      </section>
+
+      <!-- features -->
+      <section class="section alt" id="features">
+        <div class="wrap">
+          <p class="eyebrow">Features</p>
+          <h2>Everything you'd expect from a download manager.</h2>
+
+          <div class="feature-split">
+            <div>
+              <h3>Any video, in the quality you pick</h3>
+              <p>Paste a link from YouTube, Vimeo, X, Instagram, TikTok, Reddit or 1,000+ other sites. Lanes lists every quality the site offers — 4K60 down to 144p — with the file size of each, plus Audio and MP3. Nothing starts until you choose.</p>
+              <ul class="ticks">
+                <li>Playlists: one choice for every video</li>
+                <li>Uses yt-dlp, which Lanes installs for you</li>
+                <li>Video and audio joined automatically</li>
+              </ul>
+            </div>
+            <img src="img/3-video-quality.png" width="1280" height="800" loading="lazy" alt="The quality picker listing 2160p60 down to 360p with sizes for a YouTube video" />
+          </div>
+
+          <div class="grid">
+            <article class="card">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /></svg>
+              <h3>Sorted for you</h3>
+              <p>Everything lands in Downloads, filed into Videos, Music, Images, Documents, Compressed, Programs and Others.</p>
+            </article>
+            <article class="card">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zM4 10h16M8 2v4M16 2v4" /></svg>
+              <h3>Scheduler &amp; queues</h3>
+              <p>Give a queue a time window — say 1 a.m. to 6 a.m. on weekdays — and let the PC sleep or shut down when it's done.</p>
+            </article>
+            <article class="card">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10zM9 12l2 2 4-4" /></svg>
+              <h3>Checksums</h3>
+              <p>Paste the SHA-256 or MD5 from the download page and Lanes checks the file when it finishes.</p>
+            </article>
+            <article class="card">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3v8a6 6 0 0 0 12 0V3h-4v8a2 2 0 0 1-4 0V3zM6 7h4M14 7h4" /></svg>
+              <h3>Torrents too</h3>
+              <p>Open magnet links and .torrent files in the same list, and pick up where you left off after a restart.</p>
+            </article>
+            <article class="card">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7" /></svg>
+              <h3>Pause, resume, survive</h3>
+              <p>Pause any time. Crashes, sleep and reboots don't lose progress, and a file that changed on the server is caught.</p>
+            </article>
+            <article class="card">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4h6v3H9zM9 5H6a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-3" /></svg>
+              <h3>Copy a link, done</h3>
+              <p>Copy a file or video link anywhere and Lanes offers to download it. Drag links and .torrent files onto the window.</p>
+            </article>
+            <article class="card">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21a9 9 0 1 1 0-18c5 0 9 3.6 9 8 0 2.8-2.2 4-4.5 4H15a1.5 1.5 0 0 0-1 2.6A1.5 1.5 0 0 1 12 21z" /></svg>
+              <h3>Light, dark, glass</h3>
+              <p>A calm, dense list with a translucent Liquid Glass theme, light and dark modes, and your choice of accent.</p>
+            </article>
+            <article class="card">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 5 8 9 8 9s8-4 8-9V6zM12 8v5M12 16h.01" /></svg>
+              <h3>Private by design</h3>
+              <p>No ads, no tracking, no account. The extension only ever talks to Lanes on your own computer.</p>
+            </article>
+          </div>
+
+          <div class="feature-split reverse">
+            <div>
+              <h3>A list you can actually read</h3>
+              <p>Name, size, status, speed and time left in clean columns. Sort by anything, filter by category or queue, search with <kbd>Ctrl</kbd>+<kbd>F</kbd>, and open the details panel for a live chunk map and speed graph.</p>
+            </div>
+            <img src="img/1-downloads.png" width="1280" height="800" loading="lazy" alt="The Lanes download list with three active downloads and three completed ones" />
+          </div>
+        </div>
+      </section>
+
+      <!-- browser -->
+      <section class="section" id="extension">
+        <div class="wrap ext">
+          <div>
+            <p class="eyebrow">Browser integration</p>
+            <h2>Click a download. Lanes takes it.</h2>
+            <p class="section-lead">The Lanes extension hands every browser download to the app and adds a <b>Download video</b> button on videos. Right-click any link for “Download with Lanes”, or select text to grab every link in it.</p>
+            <p class="muted">Lanes opens a short setup page the first time you start it. Downloads behind a sign-in keep working — cookies go only to the app on your computer.</p>
+          </div>
+          <ul class="browsers" aria-label="Supported browsers">
+            <li>Chrome</li>
+            <li>Edge</li>
+            <li>Brave</li>
+            <li>Opera</li>
+            <li>Firefox</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- download -->
+      <section class="section alt" id="download">
+        <div class="wrap">
+          <p class="eyebrow">Download</p>
+          <h2>Get Lanes <span id="version-label"></span></h2>
+          <p class="section-lead">Free and open source under the MIT licence. Pick your system:</p>
+
+          <div class="dl-grid">
+            <article class="dl-card" data-os="windows">
+              <div class="dl-head">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 5.5 10.5 4.4v7.1H3zm0 13 7.5 1.1v-7H3zM11.5 4.3 21 3v8.5h-9.5zm0 15.4L21 21v-8.4h-9.5z" /></svg>
+                <h3>Windows</h3>
+                <span class="dl-sys">Windows 10 and 11</span>
+              </div>
+              <a class="btn primary" data-asset="setup">Installer <span class="size"></span></a>
+              <a class="btn ghost" data-asset="portable">Portable — no install <span class="size"></span></a>
+            </article>
+            <article class="dl-card" data-os="mac">
+              <div class="dl-head">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M16.4 12.6c0-2.3 1.9-3.4 2-3.5a4.3 4.3 0 0 0-3.4-1.8c-1.4-.2-2.8.8-3.5.8-.7 0-1.8-.8-3-.8-1.5 0-3 .9-3.8 2.3-1.6 2.8-.4 7 1.2 9.3.8 1.1 1.7 2.4 2.9 2.4 1.2-.1 1.6-.8 3-.8 1.4 0 1.8.8 3 .8 1.3 0 2.1-1.1 2.8-2.3a10 10 0 0 0 1.3-2.6 3.9 3.9 0 0 1-2.5-3.6zM14.2 5.8A3.9 3.9 0 0 0 15.1 3a4 4 0 0 0-2.6 1.3 3.7 3.7 0 0 0-.9 2.7 3.3 3.3 0 0 0 2.6-1.2z" /></svg>
+                <h3>macOS</h3>
+                <span class="dl-sys">macOS 11 or later</span>
+              </div>
+              <a class="btn primary" data-asset="mac-arm64">Apple Silicon (M1–M4) <span class="size"></span></a>
+              <a class="btn ghost" data-asset="mac-x64">Intel <span class="size"></span></a>
+            </article>
+            <article class="dl-card" data-os="linux">
+              <div class="dl-head">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2c-2.2 0-3.6 1.9-3.6 4.6 0 1.3.3 2.3-.3 3.6-.7 1.4-2.6 3.3-3 5.5-.3 1.6.3 2.2.9 2.5.9.4 1.5 1.3 2.6 1.8 1.5.6 2.2-.4 3.4-.4s1.9 1 3.4.4c1.1-.5 1.7-1.4 2.6-1.8.6-.3 1.2-.9.9-2.5-.4-2.2-2.3-4.1-3-5.5-.6-1.3-.3-2.3-.3-3.6C15.6 3.9 14.2 2 12 2zm-1.3 3.6c.4 0 .7.5.7 1.1s-.3 1-.7 1-.7-.4-.7-1 .3-1.1.7-1.1zm2.6 0c.4 0 .7.5.7 1.1s-.3 1-.7 1-.7-.4-.7-1 .3-1.1.7-1.1zM12 8.5c.8 0 1.8.5 1.8.9s-1 1.1-1.8 1.1-1.8-.7-1.8-1.1.9-.9 1.8-.9z" /></svg>
+                <h3>Linux</h3>
+                <span class="dl-sys">64-bit, most distributions</span>
+              </div>
+              <a class="btn primary" data-asset="appimage">AppImage <span class="size"></span></a>
+              <a class="btn ghost" data-asset="deb">Debian / Ubuntu (.deb) <span class="size"></span></a>
+              <a class="btn ghost" data-asset="targz">.tar.gz <span class="size"></span></a>
+            </article>
+          </div>
+
+          <div class="first-run">
+            <h3>First launch</h3>
+            <p>Lanes isn't code-signed yet, so your system asks once before opening it:</p>
+            <ul>
+              <li><b>Windows:</b> if SmartScreen appears, click <b>More info</b> → <b>Run anyway</b>.</li>
+              <li><b>macOS:</b> right-click Lanes in Applications → <b>Open</b> → <b>Open</b>.</li>
+              <li><b>Linux:</b> make the AppImage executable (<code>chmod +x</code>), then run it.</li>
+            </ul>
+            <p class="muted small">
+              <a id="release-notes" href="https://github.com/FX-at-Dev/Better-IDM--Better-0-Internet-Download-Manager-/releases/latest" rel="noopener">Release notes and all files</a> ·
+              <a href="https://github.com/FX-at-Dev/Better-IDM--Better-0-Internet-Download-Manager-" rel="noopener">Source code</a>
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- faq -->
+      <section class="section" id="faq">
+        <div class="wrap narrow">
+          <p class="eyebrow">FAQ</p>
+          <h2>Questions</h2>
+          <details>
+            <summary>Is Lanes really free?</summary>
+            <p>Yes. Lanes is open source under the MIT licence, with no ads, no paid tier and no account.</p>
+          </details>
+          <details>
+            <summary>Will it make my downloads faster?</summary>
+            <p>Usually, yes. Many servers limit how fast one connection can go, and Lanes opens several. If you also have a second internet connection — like your phone's data over USB — Lanes uses both at once. Two networks behind the same router share one line, so they won't add up.</p>
+          </details>
+          <details>
+            <summary>Which sites can I download videos from?</summary>
+            <p>Anything yt-dlp supports — YouTube, Vimeo, X, Instagram, TikTok, Reddit, Dailymotion and over a thousand more. Some videos need you to be signed in; turn on “Use cookies from browser” in Lanes' settings for those. Only download videos you have the right to save.</p>
+          </details>
+          <details>
+            <summary>Why does Windows or macOS warn me when I open it?</summary>
+            <p>Code-signing certificates cost money each year, and Lanes doesn't have one yet. The warning is about the missing signature, not about anything the app does — the source code is public on GitHub, and the installers are built there by GitHub's own machines.</p>
+          </details>
+          <details>
+            <summary>Does the extension see my browsing?</summary>
+            <p>Only what it needs to hand a download over: the file's address, the page it came from, and that site's cookies so signed-in downloads work. It sends them only to Lanes on your own computer (127.0.0.1). Nothing goes to us or anyone else.</p>
+          </details>
+          <details>
+            <summary>I used Prism 1.0.0 — what happens to my downloads?</summary>
+            <p>Lanes is the new name of the same app. Installing Lanes replaces Prism and keeps your settings, download list and unfinished downloads. You'll be asked to add the browser extension again, once.</p>
+          </details>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="wrap foot-inner">
+        <div class="brand small">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="5.5" fill="var(--accent)" /><path d="M7.2 4.8 12 15.4M12 4.8v10.6M16.8 4.8 12 15.4M7.4 19.2h9.2" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none" /></svg>
+          Lanes
+        </div>
+        <p class="muted small">Free and open source (MIT). Inspired by <a href="https://github.com/PagalSarthak/qorvex" rel="noopener">Qorvex</a>. Not affiliated with any other download manager.</p>
+        <a class="muted small" href="https://github.com/FX-at-Dev/Better-IDM--Better-0-Internet-Download-Manager-" rel="noopener">GitHub</a>
+      </div>
+    </footer>
+
+    <script src="main.js" defer></script>
+  </body>
+</html>

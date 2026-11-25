@@ -3,7 +3,7 @@ import type { AppState, ClipboardOffer } from "../../shared/types";
 import { Icon } from "./Icon";
 import { Btn } from "./ui";
 
-const api = window.prism;
+const api = window.lanes;
 
 interface Toast {
   id: number;
@@ -76,7 +76,7 @@ export function ShutdownBanner({ p }: { p: NonNullable<AppState["pendingShutdown
     return () => clearInterval(t);
   }, []);
   const left = Math.max(0, Math.ceil((p.at - now) / 1000));
-  const verb = { shutdown: "Shutting down", sleep: "Going to sleep", quit: "Closing Prism", none: "" }[p.action];
+  const verb = { shutdown: "Shutting down", sleep: "Going to sleep", quit: "Closing Lanes", none: "" }[p.action];
   return (
     <div className="banner warn">
       <Icon name="power" size={16} />
@@ -98,7 +98,7 @@ export function ExtensionBanner() {
     <div className="banner">
       <Icon name="puzzle" size={16} />
       <div className="grow">
-        <b>Add Prism to your browser</b>
+        <b>Add Lanes to your browser</b>
         <span className="muted"> — catch every download automatically and get a download button on videos, like IDM.</span>
       </div>
       <Btn kind="primary" small onClick={() => api.openSetupPage()}>
