@@ -161,6 +161,8 @@ export interface Settings {
   closeToTray: boolean;
   /** start (quietly, in the tray) when the user signs in to the computer */
   autoStart: boolean;
+  /** download new versions in the background and install them when Lanes restarts */
+  autoUpdate: boolean;
   startMinimized: boolean;
   notifyComplete: boolean;
   clipboardWatch: boolean;
@@ -235,6 +237,18 @@ export interface AppState {
   apiListening: boolean;
   extensionDir: string;
   pendingShutdown?: { action: CompleteAction; at: number; queue: string };
+  update: UpdateStatus;
+}
+
+export interface UpdateStatus {
+  /** auto: downloads and installs itself · manual: can only point to the download page · off: dev build */
+  mode: "auto" | "manual" | "off";
+  state: "idle" | "checking" | "latest" | "available" | "downloading" | "ready" | "error";
+  /** the newer version, when there is one */
+  version?: string;
+  percent?: number;
+  error?: string;
+  checkedAt?: number;
 }
 
 /** One downloadable quality of a video, as offered in the quality picker. */
@@ -369,6 +383,9 @@ export interface LanesApi {
   openExtensionFolder(browser?: "edge" | "chrome" | "firefox"): Promise<void>;
   /** open the extension setup page in the default browser */
   openSetupPage(): Promise<boolean>;
+  checkForUpdates(): Promise<void>;
+  downloadUpdate(): Promise<void>;
+  installUpdate(): Promise<void>;
   cancelShutdown(): Promise<void>;
   openPath(p: string): Promise<void>;
   newToken(): Promise<string>;

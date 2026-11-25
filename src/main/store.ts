@@ -24,6 +24,7 @@ export function defaultSettings(downloads = path.join(os.homedir(), "Downloads")
     autoResume: true,
     closeToTray: true,
     autoStart: true,
+    autoUpdate: true,
     startMinimized: false,
     notifyComplete: true,
     clipboardWatch: true,

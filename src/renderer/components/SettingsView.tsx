@@ -106,6 +106,8 @@ export function SettingsView({ state, toast }: { state: AppState; toast: (m: str
         </Row>
       </Section>
 
+      <UpdatesSection state={state} />
+
       <Section title="Speed & connections" icon="gauge">
         <Row title="Connections per network" help="Each enabled network opens this many parallel connections per download.">
           <NumberInput value={s.connectionsPerNetwork} min={1} max={32} onCommit={(v) => set({ connectionsPerNetwork: v })} />
@@ -326,6 +328,73 @@ export function SettingsView({ state, toast }: { state: AppState; toast: (m: str
         </Btn>
       </div>
     </div>
+  );
+}
+
+function UpdatesSection({ state }: { state: AppState }) {
+  const u = state.update;
+  const s = state.settings;
+  if (u.mode === "off") return null;
+  const status =
+    u.state === "checking"
+      ? "Checking for updates…"
+      : u.state === "latest"
+        ? "You have the latest version."
+        : u.state === "available"
+          ? `Lanes ${u.version} is available.`
+          : u.state === "downloading"
+            ? `Downloading Lanes ${u.version}… ${u.percent ?? 0}%`
+            : u.state === "ready"
+              ? `Lanes ${u.version} is downloaded. It installs when you quit Lanes, or restart now.`
+              : u.state === "error"
+                ? u.error || "Couldn't check for updates."
+                : "Lanes checks for new versions every few hours.";
+  return (
+    <Section title="Updates" icon="arrowUp">
+      {u.mode === "auto" ? (
+        <Row
+          title="Download updates automatically"
+          help="New versions download in the background and install the next time Lanes restarts. When off, Lanes just tells you a new version is out."
+        >
+          <Toggle checked={s.autoUpdate} onChange={(v) => api.setSettings({ autoUpdate: v })} />
+        </Row>
+      ) : (
+        <Row
+          title="Update notices"
+          help={
+            state.platform === "darwin"
+              ? "On macOS Lanes can't install updates by itself yet (that needs a signed app), so it tells you when a new version is out."
+              : "This copy (portable or package) can't replace itself, so Lanes tells you when a new version is out."
+          }
+        >
+          <span className="muted">On</span>
+        </Row>
+      )}
+      <Row title={`Lanes ${state.version}`} help={status}>
+        <UpdateButton u={u} />
+      </Row>
+    </Section>
+  );
+}
+
+function UpdateButton({ u }: { u: AppState["update"] }) {
+  if (u.state === "ready")
+    return (
+      <Btn kind="primary" small icon="refresh" onClick={() => api.installUpdate()}>
+        Restart now
+      </Btn>
+    );
+  if (u.state === "available")
+    return (
+      <Btn kind="primary" small icon={u.mode === "auto" ? "download" : "external"} onClick={() => api.downloadUpdate()}>
+        {u.mode === "auto" ? "Download" : "Get it"}
+      </Btn>
+    );
+  if (u.state === "downloading") return <span className="muted">{u.percent ?? 0}%</span>;
+  return (
+    <Btn small icon="refresh" disabled={u.state === "checking"} onClick={() => api.checkForUpdates()}>
+      {u.state === "checking" ? "Checking…" : "Check now"}
+    </Btn>
   );
 }
 

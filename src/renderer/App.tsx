@@ -8,7 +8,7 @@ import { NetworksView } from "./components/NetworksView";
 import { SchedulerView } from "./components/SchedulerView";
 import { SettingsView } from "./components/SettingsView";
 import { Titlebar } from "./components/Titlebar";
-import { ClipboardToast, ShutdownBanner, Toasts, useToasts } from "./components/Overlays";
+import { ClipboardToast, ShutdownBanner, Toasts, UpdateBanner, useToasts } from "./components/Overlays";
 import { Icon } from "./components/Icon";
 import { isActive } from "./lib/format";
 
@@ -40,6 +40,7 @@ export function App() {
   const [page, setPage] = useState<Page>("downloads");
   const [filter, setFilter] = useState<Filter>({ kind: "status", value: "all" });
   const [query, setQuery] = useState("");
+  const [hiddenUpdate, setHiddenUpdate] = useState("");
   const [selected, setSelected] = useState<string[]>([]);
   const [focusId, setFocusId] = useState<string | null>(null);
   const [addReq, setAddReq] = useState<(AddRequest & { key: number }) | null>(null);
@@ -190,6 +191,9 @@ export function App() {
         <div className={`content ${showDetail ? "with-detail" : ""}`}>
           <main className="main">
             {state.pendingShutdown && <ShutdownBanner p={state.pendingShutdown} />}
+            {(state.update.state === "ready" || state.update.state === "available") && hiddenUpdate !== state.update.state + state.update.version && (
+              <UpdateBanner u={state.update} onHide={() => setHiddenUpdate(state.update.state + state.update.version)} />
+            )}
             {page === "downloads" && (
               <DownloadList
                 state={state}

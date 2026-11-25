@@ -93,6 +93,32 @@ export function ShutdownBanner({ p }: { p: NonNullable<AppState["pendingShutdown
   );
 }
 
+/** Shown when an update is downloaded, or found and waiting for a click. */
+export function UpdateBanner({ u, onHide }: { u: AppState["update"]; onHide: () => void }) {
+  const ready = u.state === "ready";
+  return (
+    <div className="banner">
+      <Icon name="arrowUp" size={16} />
+      <div className="grow">
+        <b>{ready ? `Lanes ${u.version} is ready` : `Lanes ${u.version} is available`}</b>
+        <span className="muted">
+          {ready ? " — it installs when you quit Lanes, or restart now." : u.mode === "auto" ? " — download it in the background." : " — get it from the download page."}
+        </span>
+      </div>
+      {ready ? (
+        <Btn kind="primary" small onClick={() => api.installUpdate()}>
+          Restart now
+        </Btn>
+      ) : (
+        <Btn kind="primary" small onClick={() => api.downloadUpdate()}>
+          {u.mode === "auto" ? "Download" : "Get it"}
+        </Btn>
+      )}
+      <Btn kind="icon" small icon="x" title="Later" onClick={onHide} />
+    </div>
+  );
+}
+
 export function ExtensionBanner() {
   return (
     <div className="banner">

@@ -26,6 +26,7 @@ import { probe } from "./http.js";
 import { probeMedia } from "./media.js";
 import { readStoreIds, registerExternalExtensions, storeLinks } from "./stores.js";
 import { shutdownTorrents, torrentAvailable } from "./torrent.js";
+import { Updater } from "./updater.js";
 import type { AddOptions, AddRequest, AppState, ClipboardOffer, CompleteAction, Inspection, JobAction, NetworkConfig, Settings } from "../shared/types.js";
 
 const isDev = !!process.env.LANES_DEV;
@@ -83,6 +84,7 @@ const STORE_IDS = readStoreIds(app.getAppPath());
 let win: BrowserWindow | null = null;
 let tray: Tray | null = null;
 let quitting = false;
+const updater = new Updater();
 let api: http.Server | null = null;
 let apiPort = 0;
 let pending: { action: CompleteAction; at: number; queue: string; timer: NodeJS.Timeout } | null = null;
@@ -221,6 +223,7 @@ function createWindow(show = true): void {
         fs.writeFileSync(path.join(dir, `${st.name}.png`), img.toPNG());
       }
       fs.writeFileSync(path.join(dir, "done"), "1");
+      if (process.env.LANES_SNAP_QUIT) void quit();
     });
   }
   win.on("close", (e) => {
@@ -266,6 +269,9 @@ function updateTrayMenu(): void {
   tray.setContextMenu(
     Menu.buildFromTemplate([
       { label: "Open Lanes", click: showWindow },
+      ...(updater.status.state === "ready"
+        ? [{ label: `Restart to update to ${updater.status.version}`, click: () => void updater.install() }]
+        : []),
       { type: "separator" },
       { label: "Resume all", click: () => manager.resumeAll() },
       { label: "Pause all", click: () => manager.pauseAll() },
@@ -508,6 +514,7 @@ function state(): AppState {
     apiListening: !!api,
     extensionDir: extensionDir(),
     pendingShutdown: pending ? { action: pending.action, at: pending.at, queue: pending.queue } : undefined,
+    update: updater.status,
   };
 }
 
@@ -562,6 +569,7 @@ function registerIpc(): void {
     const s = store.update(patch);
     if (s.theme !== before.theme) applyWindowTheme();
     if (s.autoStart !== before.autoStart) applyAutoStart(s.autoStart);
+    if (s.autoUpdate !== before.autoUpdate) updater.settingChanged(s.autoUpdate);
     if (s.apiPort !== before.apiPort) await restartApi();
     if (patch.networks || patch.queues) {
       nets.refresh();
@@ -569,6 +577,11 @@ function registerIpc(): void {
     }
     pushState();
     return s;
+  });
+  ipcMain.handle("update", (_e, cmd: string) => {
+    if (cmd === "check") return updater.check();
+    if (cmd === "download") return updater.download();
+    if (cmd === "install") return updater.install();
   });
   ipcMain.handle("resetSettings", () => {
     const s = store.reset();
@@ -651,12 +664,18 @@ function registerIpc(): void {
 
 // ------------------------------------------------------------------ lifecycle
 
-async function quit(): Promise<void> {
-  if (quitting) return;
+/** Stop downloads and save their state. After this, quitting isn't intercepted any more. */
+async function shutdown(): Promise<void> {
   quitting = true;
+  updater.stop();
   await manager.shutdown();
   await shutdownTorrents().catch(() => {});
   tray?.destroy();
+}
+
+async function quit(): Promise<void> {
+  if (quitting) return;
+  await shutdown();
   app.quit();
 }
 
@@ -719,6 +738,16 @@ app.whenReady().then(async () => {
     store.update({ welcomeShown: true });
     if (!store.settings.extensionBrowsers.length) setTimeout(() => void openSetupPage(), 1500);
   }
+  updater.start({
+    autoDownload: () => store.settings.autoUpdate,
+    shutdown,
+    changed: () => {
+      pushState();
+      updateTrayMenu();
+    },
+    icon,
+    showWindow,
+  });
   watchClipboard();
   handleArgv(process.argv);
   manager.schedule();

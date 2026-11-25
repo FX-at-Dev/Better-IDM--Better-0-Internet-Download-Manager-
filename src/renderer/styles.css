@@ -449,6 +449,10 @@ code {
 .page {
   max-width: 920px;
 }
+/* app-wide banners (update ready, shutdown countdown) sit above the page, in line with its padding */
+.main > .banner {
+  margin: 16px 24px 0;
+}
 .page-head {
   display: flex;
   align-items: center;

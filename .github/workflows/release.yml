@@ -66,6 +66,8 @@ jobs:
             release/*.AppImage
             release/*.deb
             release/*.tar.gz
+            release/*.blockmap
+            release/latest*.yml
             release/store/*.zip
 
   release:
@@ -101,6 +103,8 @@ jobs:
 
             **First launch:** the installers aren't code-signed yet. On Windows click **More info → Run anyway**. On macOS right-click Lanes → **Open** → **Open** (once). On Linux, make the AppImage executable (`chmod +x`) and run it.
 
+            **Updating:** from 1.1.4 on, the Windows installer and the Linux AppImage download new versions by themselves and install them when Lanes restarts. The `latest*.yml` and `.blockmap` files are what they read.
+
             The `lanes-chrome-edge-*.zip` and `lanes-firefox-*.zip` files are the browser-extension packages for the Chrome Web Store, Edge Add-ons and Firefox Add-ons.
           files: |
             dist/**/*.exe
@@ -111,3 +115,5 @@ jobs:
             dist/**/*.tar.gz
             dist/**/lanes-chrome-edge-*.zip
             dist/**/lanes-firefox-*.zip
+            dist/**/*.blockmap
+            dist/**/latest*.yml
