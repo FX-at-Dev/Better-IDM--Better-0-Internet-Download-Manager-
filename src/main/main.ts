@@ -398,6 +398,13 @@ async function restartApi(): Promise<void> {
 /** Bring the window up with the New download dialog for these links. */
 function askAdd(r: AddRequest): void {
   showWindow();
+  // Windows won't let a background app take focus from the browser; on top for a moment does it
+  if (win) {
+    win.setAlwaysOnTop(true);
+    win.focus();
+    if (process.platform === "darwin") app.focus({ steal: true });
+    setTimeout(() => win?.setAlwaysOnTop(false), 400);
+  }
   const send = () => win?.webContents.send("focus-add", r);
   if (win?.webContents.isLoading()) win.webContents.once("did-finish-load", send);
   else send();

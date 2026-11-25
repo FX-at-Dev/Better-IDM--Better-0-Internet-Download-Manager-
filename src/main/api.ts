@@ -141,10 +141,10 @@ export function startApi(deps: ApiDeps, port: number): Promise<http.Server> {
           ua: typeof body.ua === "string" ? body.ua : undefined,
           source: "extension" as const,
         };
-        // Videos always ask for a quality (unless the extension named one). Caught files start right away,
-        // unless "Ask before downloading" is on.
+        // Caught downloads open the same New download window as a pasted link (file name, size, folder,
+        // queue — or the quality picker for videos), unless "Show the download window" is switched off.
         const quality = typeof body.quality === "string" ? body.quality : undefined;
-        if ((common.media && !quality) || (!common.media && s.askBrowserDownloads) || body.ask === true) {
+        if ((common.media && !quality) || (!common.media && s.downloadDialog) || body.ask === true) {
           deps.ask(common);
           return send(200, { ok: true, asked: true, added: [], duplicates: [], errors: [] });
         }

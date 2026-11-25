@@ -37,7 +37,7 @@ export function defaultSettings(downloads = path.join(os.homedir(), "Downloads")
     intercept: true,
     interceptMinMB: 0,
     defaultQuality: "best",
-    askBrowserDownloads: false,
+    downloadDialog: true,
     cookiesFromBrowser: "",
     seedRatio: 0,
     theme: "glass",

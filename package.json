@@ -1,7 +1,7 @@
 {
   "name": "lanes-download-manager",
   "productName": "Lanes",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "A fast, beautiful download manager that bonds every network connection you have.",
   "main": "dist/main/src/main/main.js",
   "author": "Lanes",

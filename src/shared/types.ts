@@ -177,7 +177,7 @@ export interface Settings {
   // media / torrents
   defaultQuality: string;
   /** Show the download dialog before a file caught from the browser starts (videos always ask for a quality). */
-  askBrowserDownloads: boolean;
+  downloadDialog: boolean;
   cookiesFromBrowser: string;
   seedRatio: number;
   // look

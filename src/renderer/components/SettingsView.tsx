@@ -247,8 +247,8 @@ export function SettingsView({ state, toast }: { state: AppState; toast: (m: str
         <Row title="Take over browser downloads">
           <Toggle checked={s.intercept} onChange={(v) => set({ intercept: v })} />
         </Row>
-        <Row title="Ask before downloading" help="Off: caught files start downloading straight away. On: Lanes first shows the name, size and folder. Videos always ask for a quality.">
-          <Toggle checked={s.askBrowserDownloads} onChange={(v) => set({ askBrowserDownloads: v })} />
+        <Row title="Show the download window" help="Caught downloads open the same window as a pasted link: name, size, folder and queue. Off: they start straight away. Videos always ask for a quality.">
+          <Toggle checked={s.downloadDialog} onChange={(v) => set({ downloadDialog: v })} />
         </Row>
         <Row title="Only take over files larger than" help="Small files stay in the browser.">
           <NumberInput value={s.interceptMinMB} min={0} suffix="MB" width={100} onCommit={(v) => set({ interceptMinMB: v })} />

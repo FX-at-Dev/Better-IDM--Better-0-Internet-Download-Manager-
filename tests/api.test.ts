@@ -85,15 +85,31 @@ test("the extension checking in marks its browser as connected", async () => {
   assert.deepEqual(JSON.parse(s.text), { connected: ["Edge"] });
 });
 
-test("web pages still can't add downloads; caught files start without a dialog", async () => {
+test("web pages can't add downloads; caught downloads open the download window by default", async () => {
   const json = { "Content-Type": "application/json" };
-  const body = JSON.stringify({ url: "https://example.com/a.zip" });
+  const ext = { ...json, Origin: "chrome-extension://abc" };
+  const body = JSON.stringify({ url: "https://example.com/a.zip", filename: "a.zip" });
   assert.equal((await req("POST", "/api/add", { ...json, Origin: "https://evil.example" }, body)).status, 403);
   assert.equal((await req("POST", "/api/add", { ...json, Origin: SELF }, body)).status, 403, "the setup page can't add downloads either");
-  const r = await req("POST", "/api/add", { ...json, Origin: "chrome-extension://abc" }, body);
+
+  // default: the same New download window as a pasted link
+  assert.equal(settings.downloadDialog, true);
+  const r = await req("POST", "/api/add", ext, body);
   assert.equal(r.status, 200);
+  assert.equal(JSON.parse(r.text).asked, true);
+  assert.equal(calls.ask, 1);
+  assert.equal(calls.add, 0);
+
+  // switched off: caught files start straight away
+  settings.downloadDialog = false;
+  const direct = await req("POST", "/api/add", ext, body);
+  assert.equal(direct.status, 200);
   assert.equal(calls.add, 1);
-  assert.equal(calls.ask, 0);
-  const v = await req("POST", "/api/add", { ...json, Origin: "chrome-extension://abc" }, JSON.stringify({ url: "https://youtube.com/watch?v=x", media: true }));
-  assert.equal(JSON.parse(v.text).asked, true, "videos open the quality picker");
+  assert.equal(calls.ask, 1);
+  settings.downloadDialog = true;
+
+  // videos always open the quality picker
+  const v = await req("POST", "/api/add", ext, JSON.stringify({ url: "https://youtube.com/watch?v=x", media: true }));
+  assert.equal(JSON.parse(v.text).asked, true);
+  assert.equal(calls.ask, 2);
 });
