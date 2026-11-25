@@ -38,7 +38,15 @@ if (!app.requestSingleInstanceLock()) {
   app.quit();
   process.exit(0);
 }
-app.setAppUserModelId("app.prism.downloadmanager");
+/**
+ * Windows matches taskbar buttons to Start-menu shortcuts by this ID and shows that shortcut's icon.
+ * Electron creates a shortcut for whatever exe is running when it first shows a notification, so dev
+ * runs (electron.exe) and the portable .exe (a new temp folder each run) get their own IDs — otherwise
+ * their shortcuts take over the installed app's taskbar icon. ("app.prism…" is kept for in-place upgrades.)
+ */
+const INSTALLED_AUMID = "app.prism.downloadmanager";
+const AUMID = !app.isPackaged ? "app.lanes.dev" : process.env.PORTABLE_EXECUTABLE_FILE ? "app.lanes.portable" : INSTALLED_AUMID;
+app.setAppUserModelId(AUMID);
 
 const dataDir = app.getPath("userData");
 fs.mkdirSync(dataDir, { recursive: true });
@@ -689,6 +697,7 @@ function applyAutoStart(on: boolean): void {
 
 app.whenReady().then(async () => {
   applyAutoStart(store.settings.autoStart);
+  removeStrayShortcuts();
   nets.refresh();
   manager.load();
   registerIpc();
@@ -724,5 +733,36 @@ function openedAtLogin(): boolean {
     return !!app.getLoginItemSettings().wasOpenedAtLogin;
   } catch {
     return false;
+  }
+}
+
+/**
+ * Remove Start-menu shortcuts that carry the installed app's ID but point somewhere else — Electron
+ * made them for dev runs (electron.exe) and for 1.0–1.1.1 portable runs (a temp folder that's since
+ * gone). Windows was showing their icon (Electron's) on the installed app's taskbar button.
+ * Only shortcuts with our exact ID are ever touched.
+ */
+function removeStrayShortcuts(): void {
+  if (process.platform !== "win32" || AUMID !== INSTALLED_AUMID || !app.isPackaged) return;
+  const dir = path.join(app.getPath("appData"), "Microsoft", "Windows", "Start Menu", "Programs");
+  let files: string[] = [];
+  try {
+    files = fs.readdirSync(dir).filter((f) => f.toLowerCase().endsWith(".lnk"));
+  } catch {
+    return;
+  }
+  const me = process.execPath.toLowerCase();
+  for (const f of files) {
+    const file = path.join(dir, f);
+    try {
+      const link = shell.readShortcutLink(file);
+      if (link.appUserModelId !== INSTALLED_AUMID) continue;
+      const target = (link.target || "").toLowerCase();
+      if (target === me) continue;
+      const name = path.basename(target);
+      const inTemp = target.split(path.sep).includes("temp");
+      const stray = !target || !fs.existsSync(link.target) || name === "electron.exe" || inTemp;
+      if (stray) fs.rmSync(file, { force: true });
+    } catch {}
   }
 }
