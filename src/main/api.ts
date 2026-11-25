@@ -17,7 +17,7 @@ export interface ApiDeps {
   /** for the setup page */
   extensionPaths: () => { chrome: string; firefox: string };
   storeLinks: () => StoreLinks;
-  openForSetup: (action: "folder" | "extensions" | "both", browser: string) => void;
+  openForSetup: (action: "folder", browser: string) => void;
 }
 
 /**
@@ -74,7 +74,7 @@ export function startApi(deps: ApiDeps, port: number): Promise<http.Server> {
           try {
             b = JSON.parse(raw || "{}");
           } catch {}
-          const action = ["folder", "extensions", "both"].includes(b.action) ? (b.action as "folder" | "extensions" | "both") : null;
+          const action = b.action === "folder" ? "folder" : null;
           const browser = ["edge", "chrome", "brave", "opera", "firefox"].includes(b.browser) ? b.browser : "chrome";
           if (!action) return send(400, { error: "bad action" });
           deps.openForSetup(action, browser);

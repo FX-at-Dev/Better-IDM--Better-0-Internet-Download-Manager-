@@ -92,8 +92,8 @@ export function SettingsView({ state, toast }: { state: AppState; toast: (m: str
         <Row title="Resume unfinished downloads on start">
           <Toggle checked={s.autoResume} onChange={(v) => set({ autoResume: v })} />
         </Row>
-        <Row title="Start with Windows" help="Starts hidden in the tray.">
-          <Toggle checked={s.startAtLogin} onChange={(v) => set({ startAtLogin: v })} />
+        <Row title="Start when the computer starts" help="Lanes waits quietly in the tray, so downloads from your browser are caught right away.">
+          <Toggle checked={s.autoStart} onChange={(v) => set({ autoStart: v })} />
         </Row>
         <Row title="Keep running in the tray when closed">
           <Toggle checked={s.closeToTray} onChange={(v) => set({ closeToTray: v })} />

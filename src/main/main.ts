@@ -18,7 +18,7 @@ import {
 } from "electron";
 import { SettingsStore } from "./store.js";
 import { NetworkManager, idFor } from "./networks.js";
-import { Tools, which } from "./tools.js";
+import { Tools } from "./tools.js";
 import { Manager, type JobRecord } from "./manager.js";
 import { startApi } from "./api.js";
 import { categoryOf, filenameFromUrl, isMediaSite, looksDownloadable, pickFilename } from "./naming.js";
@@ -109,46 +109,18 @@ const chromiumExtDir = () => (fs.existsSync(path.join(extensionDir(), "Lanes Ext
 const firefoxExtDir = () => (fs.existsSync(path.join(extensionDir(), "Lanes Extension (Firefox)")) ? path.join(extensionDir(), "Lanes Extension (Firefox)") : path.join(extensionDir(), "firefox"));
 
 type SetupBrowser = "edge" | "chrome" | "brave" | "opera" | "firefox";
-const BROWSER_EXE: Record<SetupBrowser, string> = { edge: "msedge", chrome: "chrome", brave: "brave", opera: "opera", firefox: "firefox" };
-const MAC_APP: Record<SetupBrowser, string> = { edge: "Microsoft Edge", chrome: "Google Chrome", brave: "Brave Browser", opera: "Opera", firefox: "Firefox" };
-const LINUX_EXE: Record<SetupBrowser, string[]> = {
-  edge: ["microsoft-edge", "microsoft-edge-stable"],
-  chrome: ["google-chrome", "google-chrome-stable", "chromium", "chromium-browser"],
-  brave: ["brave-browser", "brave"],
-  opera: ["opera"],
-  firefox: ["firefox"],
-};
-
-/** Browsers refuse to open their internal pages from a web link, but accept them when launched with one. */
-function openInBrowser(browser: SetupBrowser, url: string): void {
-  const opts = { detached: true, stdio: "ignore" as const, windowsHide: true };
-  if (process.platform === "win32") spawn("cmd", ["/c", "start", "", BROWSER_EXE[browser], url], opts).unref();
-  else if (process.platform === "darwin") spawn("open", ["-a", MAC_APP[browser], url], opts).unref();
-  else {
-    const exe = LINUX_EXE[browser].map((e) => which(e)).find(Boolean);
-    if (exe) spawn(exe, [url], opts).on("error", () => {}).unref();
-  }
-}
-const EXTENSIONS_PAGE: Record<SetupBrowser, string> = {
-  edge: "edge://extensions",
-  chrome: "chrome://extensions",
-  brave: "brave://extensions",
-  opera: "opera://extensions",
-  firefox: "about:debugging#/runtime/this-firefox",
-};
 
 /**
- * Help with loading the unpacked extension: open the browser's extensions page, and/or a folder
- * window with the extension folder highlighted (ready to drag in). The path is copied too.
+ * Show the unpacked extension in a folder window, already selected so it can be dragged into the
+ * browser's extensions page; its path is copied too, for "Load unpacked". (Browsers don't let other
+ * programs open their extensions page — chrome://extensions passed on the command line opens a blank
+ * tab — so the setup page has the user paste that address instead.)
  */
-function openForSetup(action: "folder" | "extensions" | "both", browser: SetupBrowser): void {
-  if (action !== "folder") openInBrowser(browser, EXTENSIONS_PAGE[browser]);
-  if (action !== "extensions") {
-    const target = browser === "firefox" ? path.join(firefoxExtDir(), "manifest.json") : chromiumExtDir();
-    lastClip = target;
-    clipboard.writeText(target); // pasted into "Load unpacked" (folder) or Firefox's file picker (manifest.json)
-    setTimeout(() => shell.showItemInFolder(target), action === "both" ? 700 : 0);
-  }
+function openForSetup(browser: SetupBrowser): void {
+  const target = browser === "firefox" ? path.join(firefoxExtDir(), "manifest.json") : chromiumExtDir();
+  lastClip = target;
+  clipboard.writeText(target);
+  shell.showItemInFolder(target);
 }
 
 /** Open the extension setup page in the user's default browser. */
@@ -404,7 +376,7 @@ async function restartApi(): Promise<void> {
         },
         extensionPaths: () => ({ chrome: chromiumExtDir(), firefox: path.join(firefoxExtDir(), "manifest.json") }),
         storeLinks: () => storeLinks(STORE_IDS),
-        openForSetup: (action, browser) => openForSetup(action, browser as SetupBrowser),
+        openForSetup: (_action, browser) => openForSetup(browser as SetupBrowser),
       },
       port,
     );
@@ -574,7 +546,7 @@ function registerIpc(): void {
     const before = store.settings;
     const s = store.update(patch);
     if (s.theme !== before.theme) applyWindowTheme();
-    if (s.startAtLogin !== before.startAtLogin && app.isPackaged) app.setLoginItemSettings({ openAtLogin: s.startAtLogin, args: ["--hidden"] });
+    if (s.autoStart !== before.autoStart) applyAutoStart(s.autoStart);
     if (s.apiPort !== before.apiPort) await restartApi();
     if (patch.networks || patch.queues) {
       nets.refresh();
@@ -641,7 +613,7 @@ function registerIpc(): void {
   });
   ipcMain.handle("openExtensionFolder", (_e, browser?: string) => {
     const b = (["edge", "chrome", "brave", "opera", "firefox"].includes(browser ?? "") ? browser : "chrome") as SetupBrowser;
-    openForSetup("both", b);
+    openForSetup(b);
   });
   ipcMain.handle("openSetupPage", () => openSetupPage());
   ipcMain.handle("cancelShutdown", () => cancelCompleteAction());
@@ -689,11 +661,38 @@ app.on("window-all-closed", () => {
   if (!store.settings.closeToTray) void quit();
 });
 
+/**
+ * Start Lanes (quietly, in the tray) when the user signs in, so browser downloads are caught from the
+ * first minute. Re-applied on every launch, which also keeps the path right if the portable .exe moves.
+ */
+function applyAutoStart(on: boolean): void {
+  if (!app.isPackaged) return; // dev builds never register
+  // the portable .exe runs from a temporary folder; register the .exe the user actually has
+  const exe = process.env.PORTABLE_EXECUTABLE_FILE || process.env.APPIMAGE || process.execPath;
+  try {
+    if (process.platform === "win32") {
+      app.setLoginItemSettings({ openAtLogin: on, path: exe, args: ["--hidden"], name: "Lanes" });
+    } else if (process.platform === "darwin") {
+      app.setLoginItemSettings({ openAtLogin: on }); // macOS passes no args; see openedAtLogin()
+    } else {
+      // Linux: XDG autostart entry
+      const file = path.join(app.getPath("home"), ".config", "autostart", "lanes.desktop");
+      if (on) {
+        fs.mkdirSync(path.dirname(file), { recursive: true });
+        fs.writeFileSync(file, `[Desktop Entry]\nType=Application\nName=Lanes\nExec="${exe}" --hidden\nX-GNOME-Autostart-enabled=true\nNoDisplay=true\n`);
+      } else fs.rmSync(file, { force: true });
+    }
+  } catch (e) {
+    console.error("Could not update start-with-computer:", (e as Error).message);
+  }
+}
+
 app.whenReady().then(async () => {
+  applyAutoStart(store.settings.autoStart);
   nets.refresh();
   manager.load();
   registerIpc();
-  const hidden = process.argv.includes("--hidden") || store.settings.startMinimized;
+  const hidden = process.argv.includes("--hidden") || openedAtLogin() || store.settings.startMinimized;
   createWindow(!hidden);
   buildTray();
   await restartApi();
@@ -717,3 +716,13 @@ app.whenReady().then(async () => {
     pushState();
   });
 });
+
+/** macOS can't pass --hidden to login items; ask the OS instead. */
+function openedAtLogin(): boolean {
+  if (process.platform !== "darwin") return false;
+  try {
+    return !!app.getLoginItemSettings().wasOpenedAtLogin;
+  } catch {
+    return false;
+  }
+}

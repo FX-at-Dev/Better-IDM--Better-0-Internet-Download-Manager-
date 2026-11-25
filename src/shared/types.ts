@@ -159,7 +159,8 @@ export interface Settings {
   retries: number;
   autoResume: boolean;
   closeToTray: boolean;
-  startAtLogin: boolean;
+  /** start (quietly, in the tray) when the user signs in to the computer */
+  autoStart: boolean;
   startMinimized: boolean;
   notifyComplete: boolean;
   clipboardWatch: boolean;

@@ -2,8 +2,8 @@
 // API (http://127.0.0.1:<port>/welcome), detects which browser it is in, and flips to
 // "You're all set" by itself once the extension pings Lanes.
 //  - Once the extension is in the browser's store: one "Add to <browser>" button.
-//  - Until then: one button that opens the extensions page and the extension folder side by side,
-//    then the user switches on Developer mode and drags the folder in.
+//  - Until then: browsers refuse to let any program open their extensions page, so the page copies
+//    its address (the user pastes it into a new tab), then opens the folder to drag in.
 
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 
@@ -56,6 +56,8 @@ export function welcomePage(o: { version: string; chromePath: string; firefoxPat
   .path { display:flex; align-items:center; gap:8px; margin-top:8px; padding:6px 6px 6px 10px; border-radius:6px; background:var(--card); border:1px solid var(--border); font:12px "Cascadia Mono",Consolas,monospace; word-break:break-all }
   .path span { flex:1 } .path button { height:26px; flex:none }
   .note { color:var(--text-3); font-size:12.5px; margin-top:18px }
+  kbd { font:600 12px "Segoe UI",system-ui,sans-serif; padding:2px 7px; border-radius:5px; border:1px solid var(--border); border-bottom-width:2px; background:var(--card); color:var(--text) }
+  code.addr { font:13px "Cascadia Mono",Consolas,monospace; padding:6px 10px; border-radius:6px; background:var(--card); border:1px solid var(--border); user-select:all }
   .hidden { display:none !important }
   .done { text-align:center; padding:40px 16px }
   .done .tick { width:64px; height:64px; margin:0 auto 16px; border-radius:50%; display:grid; place-items:center; background:color-mix(in srgb,var(--ok) 16%,transparent); color:var(--ok); font-size:32px }
@@ -79,10 +81,18 @@ export function welcomePage(o: { version: string; chromePath: string; firefoxPat
 
     <!-- not published yet: one button, one switch, one drag -->
     <div class="card hidden" id="manual">
-      <button class="primary big-btn" data-act="both">Start</button>
       <ol class="steps">
-        <li><div><b>Switch on Developer mode</b> on the page that opens <span class="mock">Developer mode <i class="sw"></i></span><p id="dev-where">It's in the left sidebar.</p></div></li>
-        <li><div><b>Drag the highlighted “Lanes Extension” folder</b> from the folder window onto that page.<p>That's it — this page will say so.</p></div></li>
+        <li><div>
+          <b>Open the extensions page</b>
+          <p>Click <b>Copy address</b>, then press <kbd>Ctrl</kbd> <kbd>T</kbd> &nbsp;<kbd>Ctrl</kbd> <kbd>V</kbd> &nbsp;<kbd>Enter</kbd> — a new tab, paste, go. (Browsers don't let other programs open this page, so this one step is yours.)</p>
+          <div class="row" style="margin-top:10px"><button class="primary big-btn" data-copy="#ext-url" data-done="Copied — now Ctrl+T, Ctrl+V, Enter">Copy address</button><code class="addr" id="ext-url">chrome://extensions</code></div>
+        </div></li>
+        <li><div><b>Switch on Developer mode</b> <span class="mock">Developer mode <i class="sw"></i></span><p id="dev-where">It's in the left sidebar.</p></div></li>
+        <li><div>
+          <b>Drag the “Lanes Extension” folder onto that page</b>
+          <p>Show folder opens it with the folder already selected — drag it into the browser window. This page will say when it's done.</p>
+          <div class="row" style="margin-top:10px"><button data-act="folder">Show folder</button></div>
+        </div></li>
       </ol>
       <details>
         <summary>Drag and drop not working?</summary>
@@ -92,10 +102,15 @@ export function welcomePage(o: { version: string; chromePath: string; firefoxPat
     </div>
 
     <div class="card hidden" id="firefox">
-      <button class="primary big-btn" data-act="both">Start</button>
       <ol class="steps">
-        <li><div><b>Click “Load Temporary Add-on…”</b> on the page that opens</div></li>
-        <li><div><b>Pick the highlighted manifest.json</b><p class="path"><span id="ff-path">${esc(o.firefoxPath)}</span><button data-copy="#ff-path">Copy</button></p></div></li>
+        <li><div>
+          <b>Open Firefox's add-on debugging page</b>
+          <p>Click <b>Copy address</b>, then press <kbd>Ctrl</kbd> <kbd>T</kbd> &nbsp;<kbd>Ctrl</kbd> <kbd>V</kbd> &nbsp;<kbd>Enter</kbd>.</p>
+          <div class="row" style="margin-top:10px"><button class="primary big-btn" data-copy="#ff-url" data-done="Copied — now Ctrl+T, Ctrl+V, Enter">Copy address</button><code class="addr" id="ff-url">about:debugging#/runtime/this-firefox</code></div>
+        </div></li>
+        <li><div><b>Click “Load Temporary Add-on…” and pick manifest.json</b><p>Show file opens the folder with it selected; its path is copied too, to paste into the file window.</p>
+          <div class="row" style="margin-top:10px"><button data-act="folder">Show file</button></div>
+          <p class="path"><span id="ff-path">${esc(o.firefoxPath)}</span><button data-copy="#ff-path">Copy</button></p></div></li>
       </ol>
       <p class="note">Firefox removes add-ons loaded this way when it restarts, until Lanes's add-on is published on addons.mozilla.org. For now, Edge or Chrome is the better choice.</p>
     </div>
@@ -123,6 +138,7 @@ export function welcomePage(o: { version: string; chromePath: string; firefoxPat
     document.getElementById("store-link").href = store;
   } else show(key === "firefox" ? "firefox" : "manual");
   document.getElementById("dev-where").textContent = key === "edge" ? "It's in the left sidebar." : "It's in the top-right corner.";
+  document.getElementById("ext-url").textContent = (key === "edge" ? "edge" : key === "brave" ? "brave" : key === "opera" ? "opera" : "chrome") + "://extensions";
 
   const toast = (t) => {
     const el = document.getElementById("toast");
@@ -134,14 +150,34 @@ export function welcomePage(o: { version: string; chromePath: string; firefoxPat
   document.querySelectorAll("[data-copy]").forEach((b) =>
     b.addEventListener("click", async () => {
       const text = document.querySelector(b.dataset.copy).textContent.trim();
-      try { await navigator.clipboard.writeText(text); toast("Copied"); } catch { toast("Select the text and press Ctrl+C"); }
+      const el = document.querySelector(b.dataset.copy);
+      const done = () => toast(b.dataset.done || "Copied");
+      try {
+        await navigator.clipboard.writeText(text);
+        return done();
+      } catch {}
+      // older copy route (works where the async clipboard is blocked)
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.cssText = "position:fixed;opacity:0";
+      document.body.appendChild(ta);
+      ta.select();
+      const ok = document.execCommand && document.execCommand("copy");
+      ta.remove();
+      if (ok) return done();
+      // last resort: select it so one Ctrl+C does it
+      const r = document.createRange();
+      r.selectNodeContents(el);
+      getSelection().removeAllRanges();
+      getSelection().addRange(r);
+      toast("Press Ctrl+C to copy, then Ctrl+T, Ctrl+V, Enter");
     }),
   );
   document.querySelectorAll("[data-act]").forEach((b) =>
     b.addEventListener("click", async () => {
       try {
         const r = await fetch("/welcome/open", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: b.dataset.act, browser: key }) });
-        toast(r.ok ? "Opening the extensions page and the folder…" : "Lanes couldn't open them — use the steps below");
+        toast(r.ok ? "Opening the folder…" : "Lanes couldn't open the folder — use the path below");
       } catch { toast("Lanes isn't running"); }
     }),
   );
